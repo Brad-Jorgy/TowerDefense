@@ -3,8 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Tower Destroyer of Worlds</title>
+    <link rel = "stylesheet" type = "text/css" href = "styles/indexStyle.css">
 </head>
-<body>
+<body onload = "MyGame.game.initialize();">
+<div id = "game">
+    <div id = "main-menu" class = "screen">
+        <div class = "menu">
+            <div class="flex-container">
+                <div class="firstContainer">
+                   Tower Stuff
+                </div>
+                <div class="secondContainer">
+                    <button id = "id-newGame">New Game</button>
+                    <button id = "id-options">Options</button>
+                    <button id = "id-high-scores">High&nbsp;Scores</button>
+                    <button id = "id-credits">Credits</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id = "game-play" class = "screen">
+        <canvas id = "canvas-main" width = 100%; height = 100%;></canvas>
+    </div>
+    <div id = "options" class = "screen">
+        <h1>Help</h1>
+        <p1>This is some help on how to play the game.</p1>
+        <p2>Use Right Arrow to go right and use Left Arrow to go left.</p2>
+        <ul class = "menu">
+            <li><button id = "options-back">Back</button></li>
+        </ul>
+    </div>
+    <div id = "high-scores" class = "screen">
+        <h1>High Scores</h1>
+        <ol id = "scoreList" ></ol>
+        <ul class = "menu">
+            <li><button id = "high-scores-back">Back</button></li>
+        </ul>
+    </div>
+    <div id = "credits" class = "screen">
+        <h1>Credits</h1>
+        <p>Created by</p>
+        <p>Ryan Medlyn</p>
+        <p>&</p>
+        <p>Brad Jorgensen</p>
+        <p>For CS5410, Final Project - Tower Defense Type Game</p>
+        <ul class = "menu">
+            <li><button id = "credits-back">Back</button></li>
+        </ul>
+    </div>
+</div>
+
+<script src = "scripts/game.js"></script>
+<script src = "scripts/mainMenu.js"></script>
+<script src = "scripts/index.js"></script>
+<script src = "scripts/highScores.js"></script>
+<script src = "scripts/newGame.js"></script>
+<script src = "scripts/options.js"></script>
+<script src = "scripts/credits.js"></script>
 
 </body>
+
 </html>
