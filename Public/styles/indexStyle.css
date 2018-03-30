@@ -1,3 +1,7 @@
+:root {
+    --primary-element-color: crimson;
+    --primary-text-color: #CECEF6;
+}
 
 #game {
     position: absolute;
@@ -32,22 +36,28 @@
 .flex-container{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     width: 100%;
+}
+
+#main-menu .menu .flex-container {
+    justify-content: space-between;
     height: 100vh;
 }
 
-.firstContainer{
+.main-content{
     width: 100%;
     height: 65%;
+}
+
+#main-menu .main-content {
     padding-top: 30px;
     padding: 30px;
     font-size: 150px;
     font-family: Arial;
-    color: crimson;
+    color: var(--primary-element-color);
 }
 
-.secondContainer{
+.navigation{
     width: 100%;
     height: 35%;
     padding: 20px;
@@ -62,19 +72,16 @@
     background-size: 100% 100%;
     width: 100%;
     height: 100%;
-}
-
-.menu  {
     /*margin: 0.8em 0;*/
 }
 
 .menu button {
     font-family: Arial, sans-serif;
     font-size: 20px;
-    color: #CECEF6;
+    color: var(--primary-text-color);
     width: 10em;
     height: 3em;
-    background: crimson;
+    background: var(--primary-element-color);
     /*border: 0.1em solid rgb(255, 0, 0);*/
     border-radius: 0.5em;
     box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
@@ -85,7 +92,7 @@
 }
 
 .menu button:active {
-    color: #CECEF6;
+    color: var(--primary-text-color);
     background: rgb(0, 0, 0);
 }
 
@@ -105,6 +112,10 @@
     font-size: 0.5em;
 }
 
-#about p {
+#about p, #credits p {
     text-align: center;
+}
+
+#options-container {
+    align-items: center;
 }
