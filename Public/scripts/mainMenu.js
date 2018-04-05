@@ -2,9 +2,9 @@ MyGame.screens['main-menu'] = (function(game) {
     'use strict';
 
     function initialize() {
-        document.getElementById('id-newGame').addEventListener(
+        document.getElementById('id-play-game').addEventListener(
             'click',
-            function() { game.showScreen('newGame'); });
+            function() { game.showScreen('play-game'); });
 
         document.getElementById('id-options').addEventListener(
             'click',
