@@ -31,7 +31,6 @@ MyGame.game = (function(screens) {
         screens[id].run();
         //
         // Then, set the new screen to be active
-        console.log(document.getElementById(id));
         document.getElementById(id).classList.add('active');
     }
 
