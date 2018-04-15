@@ -1,19 +1,43 @@
 MyGame.screens['play-game'] = (function(game, graphics, events, input) {
     'use strict';
 
+    const backgroundImage = "./images/sand_template.jpg";
+    let backGround = new Image();
+    let ready = false;
     let mouseCapture = false,
         myMouse = input.Mouse(),
         myKeyboard = input.Keyboard(),
         cancelNextRequest = false,
-        blockOut,
         gameInfo,
         actionList = [],
         lastTimeStamp,
-        backGroundReady = false,
-        gamePhase = 'play',
+        gamePhase = 'levelOne',
         currentUpdateAndRenderList = [],
-        playRenderList = [
-            () => { graphics.renderTest(); },
+        levelOneRenderList = [
+            () => { graphics.drawBackground(backGround); },
+            () => { graphics.renderWalls(); },
+            () => { graphics.drawGrid(); },
+            () => { graphics.textLevel("Level: 1"); },
+            () => { graphics.updateTime(); },
+            () => { graphics.updateMoney(); },
+            () => { graphics.updateLife(); },
+        ],
+        levelTwoRenderList = [
+            () => { graphics.drawBackground(backGround); },
+            () => { graphics.drawGrid(); },
+            () => { graphics.textLevel("Level: 2"); },
+            () => { graphics.updateTime(); },
+            () => { graphics.updateMoney(); },
+            () => { graphics.updateLife(); },
+        ],
+        levelThreeRenderList = [
+
+            () => { graphics.drawBackground(backGround); },
+            () => { graphics.drawGrid(); },
+            () => { graphics.textLevel("Level: 3"); },
+            () => { graphics.updateTime(); },
+            () => { graphics.updateMoney(); },
+            () => { graphics.updateLife(); },
         ],
         gameEndRenderList = [
 
@@ -25,16 +49,25 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
 
         ];
 
-    // function layTheBricks() {
-    //   graphics.drawBricks();
-    // }
+    function startLevel(time, keyIn){
+        console.log("level started");
+        let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
+        let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, graphics.cancel, 'play')};
+        events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
+        myKeyboard.keyProcessed(keyIn);
+    }
 
     function initialize() {
         console.log('Tower game initializing...');
 
         gameInfo = {};
-
+        backGround.src = backgroundImage;
+        backGround.addEventListener('load', backgroundLoaded, false);
+        document.getElementById('startLevel').addEventListener(
+            'click',
+            function() { startLevel(); });
         // Create the keyboard input handler and register the keyboard commands
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_G, startLevel);
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
             cancelNextRequest = true;
@@ -72,8 +105,14 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         } else if (gamePhase === 'game-over' ) {
             currentUpdateAndRenderList = gameEndRenderList.slice(0);
             actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
-        } else if (gamePhase === 'play') {
-            currentUpdateAndRenderList = playRenderList.slice(0);
+        } else if (gamePhase === 'levelOne') {
+            currentUpdateAndRenderList = levelOneRenderList.slice(0);
+            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+        } else if (gamePhase === 'levelTwo') {
+            currentUpdateAndRenderList = levelTwoRenderList.slice(0);
+            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+        } else if (gamePhase === 'levelThree') {
+            currentUpdateAndRenderList = levelThreeRenderList.slice(0);
             actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else {
             currentUpdateAndRenderList = demoRenderList.slice(0);
@@ -88,11 +127,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
             currentUpdateAndRenderList.shift().call();
         }
 
-        // renderList.forEach((thing) => {
-        //   eval(`${ thing };
-        // });
-        // blockOut.draw();
-
     }
 
     //------------------------------------------------------------------
@@ -105,6 +139,10 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
 
         update(time - lastTimeStamp);
 
+        for(let counter = 0; counter<15; counter++) {
+            myKeyboard.update(time - lastTimeStamp);
+
+        }
 
         lastTimeStamp = time;
 
@@ -124,13 +162,15 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         saveData.topScores();
     }
 
+    function backgroundLoaded(){
+        ready = true;
+        requestAnimationFrame(gameLoop);
+    }
+
     function run() {
         lastTimeStamp = performance.now();
         cancelNextRequest = false;
         currentUpdateAndRenderList = gameStartRenderList;
-        let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
-        let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, graphics.cancel, 'play')};
-        events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
 
         requestAnimationFrame(gameLoop);
     }

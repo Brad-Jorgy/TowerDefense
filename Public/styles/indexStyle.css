@@ -21,18 +21,25 @@
 }
 
 .firstMenuDiv{
-    width: 100%;
-    height: 20%;
+    align: center;
+    width: 380px;
+    height: 60px;
+    font-family:Arial;
+    color: white;
+    text-align: center;
 }
 
 .secondMenuDiv{
-    width: 100%;
-    height: 60%;
+    align: center;
+    width: 360px;
+    height: 480px;
+    border: 10px solid white;
 }
 
 .thirdMenuDiv{
-    width: 100%;
-    height: 20%;
+    align: center;
+    width: 380px;
+    height: 80px;
 }
 
 #game {
@@ -57,12 +64,18 @@
     display: block;
 }
 
+#game .options{
+    background-color: red;
+}
+
 #main-menu #high-scores{
     /*padding-top: 1em;*/
+    background: url("../images/sand_template.jpg");
     cursor: pointer;
     font-size: 0.75em;
     width: 100%;
     height: 100%;
+
 }
 
 .flex-container{
@@ -103,14 +116,16 @@
     padding: 0;
     margin: 0;
     list-style: none;
-    background: url("../images/sand_template.jpg");
     background-size: 100% 100%;
     width: 100%;
     height: 100%;
 }
 
-.menu  {
-    /*margin: 0.8em 0;*/
+.options {
+    background: url("../images/sand_template.jpg");
+    background-size: 100% 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .menu button {
@@ -126,6 +141,22 @@
 }
 
 .menu button:hover {
+    background: black;
+}
+
+.thirdMenuDiv button {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: white;
+    width: 8em;
+    height: 3em;
+    background: gray;
+    /*border: 0.1em solid rgb(255, 0, 0);*/
+    border-radius: 0.5em;
+    box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
+}
+
+.thirdMenuDiv button:hover {
     background: black;
 }
 
