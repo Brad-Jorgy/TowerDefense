@@ -31,7 +31,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
             () => { graphics.updateLife(); },
         ],
         levelThreeRenderList = [
-
             () => { graphics.drawBackground(backGround); },
             () => { graphics.drawGrid(); },
             () => { graphics.textLevel("Level: 3"); },
@@ -40,12 +39,9 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
             () => { graphics.updateLife(); },
         ],
         gameEndRenderList = [
-
+            () => { graphics.drawGameOver(); },
         ],
         gameStartRenderList = [
-
-        ],
-        demoRenderList = [
 
         ];
 
@@ -57,16 +53,59 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         myKeyboard.keyProcessed(keyIn);
     }
 
+    // function gameOver(){
+    //     if(creeps === 0){
+    //         end game.
+    //     }
+    // }
+
+    function scorez(time, keyIn){
+        console.log("Score ADDED");
+        axios.get('/scores/scores.txt').then((response) => {
+            console.log(response.data);});
+        myKeyboard.keyProcessed(keyIn);
+    }
+
+    function postScorez(time, keyIn){
+        let score = 5;
+        superagent.post('/scoresIn')
+            .send( { scoreFile: 'scores.txt' , addScore: '10' }).then((response) => {
+            console.log(response.data);
+        }).catch( (err) => {
+            console.log(err);
+        });
+        myKeyboard.keyProcessed(keyIn);
+    }
+
+    function options(){
+
+    }
+
     function initialize() {
         console.log('Tower game initializing...');
 
         gameInfo = {};
         backGround.src = backgroundImage;
         backGround.addEventListener('load', backgroundLoaded, false);
+        let optionsPopUp = document.getElementById('diaOptions');
         document.getElementById('startLevel').addEventListener(
             'click',
             function() { startLevel(); });
+
+        document.getElementById('gameOptions').addEventListener(
+            'click',
+            function() { optionsPopUp.showModal(); });
+
+        document.getElementById('exitGame').addEventListener(
+            'click',
+            function() {
+                cancelNextRequest = true;
+                game.showScreen('main-menu');
+            });
+
         // Create the keyboard input handler and register the keyboard commands
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_P, postScorez);
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_S, scorez);
         myKeyboard.registerCommand(KeyEvent.DOM_VK_G, startLevel);
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
@@ -101,22 +140,22 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         myMouse.update(elapsedTime);
         if (gamePhase === 'start-game') {
             currentUpdateAndRenderList = gameStartRenderList.slice(0);
-            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else if (gamePhase === 'game-over' ) {
             currentUpdateAndRenderList = gameEndRenderList.slice(0);
-            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else if (gamePhase === 'levelOne') {
             currentUpdateAndRenderList = levelOneRenderList.slice(0);
-            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else if (gamePhase === 'levelTwo') {
             currentUpdateAndRenderList = levelTwoRenderList.slice(0);
-            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else if (gamePhase === 'levelThree') {
             currentUpdateAndRenderList = levelThreeRenderList.slice(0);
-            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else {
             currentUpdateAndRenderList = demoRenderList.slice(0);
-            actionList = events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         }
 
     }

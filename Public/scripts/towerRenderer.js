@@ -125,12 +125,23 @@ MyGame.towerGraphics = (function() {
         ctx.restore();
     }
 
+    function drawGameOver(){
+        ctx.font = "100px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+        // add "esc to go back to main screen"
+        ctx.font = "25px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText('Use esc to return to main screen', canvas.width / 2, canvas.height / 1.75);
+    }
+
     function drawGrid(){
         for (var x = 0; x <= gridWidth; x += squares) {
             ctx.moveTo(0.5 + x, 0);
             ctx.lineTo(0.5 + x, gridWidth);
         }
-
 
         for (var x = 0; x <= gridWidth; x += squares) {
             ctx.moveTo(0, 0.5 + x);
@@ -162,6 +173,7 @@ MyGame.towerGraphics = (function() {
         updateMoney: updateMoney,
         updateLife: updateLife,
         renderWalls: renderWalls,
+        drawGameOver: drawGameOver,
 
     }
 }());

@@ -10,10 +10,10 @@ MyGame.screens['high-scores'] = (function(game, persistence) {
     }
 
     function run() {
-        presentScores = persistence.getTopFive();
-        for(var i =0; i < presentScores.length; i++) {
-            document.getElementById("scoreList").innerHTML += "<li>" + presentScores[i] + "</li>";
-        }
+        // presentScores = persistence.getTopFive();
+        // for(var i =0; i < presentScores.length; i++) {
+        //     document.getElementById("scoreList").innerHTML += "<li>" + presentScores[i] + "</li>";
+        // }
     }
 
     return {
