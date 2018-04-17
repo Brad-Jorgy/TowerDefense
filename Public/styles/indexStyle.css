@@ -12,12 +12,12 @@
 .firstGameCanvas{
     width: 600px;
     height: 640px;
-    border: 10px solid crimson;
+    border: 10px solid red;
 }
 
 .flex-container3{
-    border: 10px solid crimson;
-    background-color: crimson;
+    border: 10px solid red;
+    background-color: red;
 }
 
 .firstMenuDiv{
@@ -48,7 +48,7 @@
 }
 
 #high-scores{
-    background: url("../images/sand_template.jpg");
+    background: url("../Images/sand_template.jpg");
     background-size: 100% 100%;
     width: 100%;
     height: 100%;
@@ -79,7 +79,7 @@
 }
 
 #game .options{
-    background-color: crimson;
+    background-color: red;
 }
 
 #main-menu {
@@ -91,7 +91,7 @@
 }
 
 #credits{
-    background: url("../images/sand_template.jpg");
+    background: url("../Images/sand_template.jpg");
     background-size: 100% 100%;
     width: 100%;
     height: 100%;
@@ -135,7 +135,7 @@
     padding: 0;
     margin: 0;
     list-style: none;
-    background: url("../images/sand_template.jpg");
+    background: url("../Images/sand_template.jpg");
     background-size: 100% 100%;
     width: 100%;
     height: 100%;
