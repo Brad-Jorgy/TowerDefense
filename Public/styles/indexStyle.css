@@ -42,6 +42,20 @@
     height: 80px;
 }
 
+#credits{
+    text-align: center;
+    color: white;
+}
+
+#high-scores{
+    background: url("../Images/sand_template.jpg");
+    background-size: 100% 100%;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: white;
+}
+
 #game {
     position: absolute;
     left: 0;
@@ -68,14 +82,19 @@
     background-color: red;
 }
 
-#main-menu #high-scores{
-    /*padding-top: 1em;*/
-    background: url("../Images/sand_template.jpg");
+#main-menu {
     cursor: pointer;
     font-size: 0.75em;
     width: 100%;
     height: 100%;
 
+}
+
+#credits{
+    background: url("../Images/sand_template.jpg");
+    background-size: 100% 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .flex-container{
@@ -116,14 +135,16 @@
     padding: 0;
     margin: 0;
     list-style: none;
+    background: url("../Images/sand_template.jpg");
     background-size: 100% 100%;
     width: 100%;
     height: 100%;
 }
 
-.options {
-    background: url("../Images/sand_template.jpg");
-    background-size: 100% 100%;
+.menuCredits, .menuOptions{
+    text-align: center;
+    padding: 0;
+    margin: 0;
     width: 100%;
     height: 100%;
 }
@@ -135,12 +156,26 @@
     width: 10em;
     height: 3em;
     background: crimson;
-    /*border: 0.1em solid rgb(255, 0, 0);*/
+    border-radius: 0.5em;
+    box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
+}
+
+.menuCredits button, .menuOptions button{
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    color: #CECEF6;
+    width: 10em;
+    height: 3em;
+    background: crimson;
     border-radius: 0.5em;
     box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
 }
 
 .menu button:hover {
+    background: black;
+}
+
+.menuCredits button:hover, .menuOptions button:hover{
     background: black;
 }
 
@@ -151,7 +186,6 @@
     width: 8em;
     height: 3em;
     background: gray;
-    /*border: 0.1em solid rgb(255, 0, 0);*/
     border-radius: 0.5em;
     box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
 }
@@ -161,6 +195,11 @@
 }
 
 .menu button:active {
+    color: #CECEF6;
+    background: rgb(0, 0, 0);
+}
+
+.menuCredits button:active, .menuOptions button:active  {
     color: #CECEF6;
     background: rgb(0, 0, 0);
 }
@@ -183,4 +222,14 @@
 
 #about p {
     text-align: center;
+}
+
+#diaOptions{
+    position: absolute;
+    margin: auto;
+}
+
+#weaponLabel, #gridLabel{
+    font-size: 20px;
+    color: crimson;
 }

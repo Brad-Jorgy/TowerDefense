@@ -12,11 +12,11 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         actionList = [],
         lastTimeStamp,
         gamePhase = 'play-game',
+        showGrid = false,
         currentUpdateAndRenderList = [],
         levelStaticRenderElements = [
             () => { graphics.drawBackground(backGround); },
             () => { graphics.renderWalls(); },
-            () => { graphics.drawGrid(); },
             () => { graphics.updateTime(); },
             () => { graphics.updateMoney(); },
             () => { graphics.updateLife(); },
@@ -31,7 +31,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             () => { graphics.textLevel("Level: 3"); },
         ],
         gameEndRenderList = [
-
+            () => { graphics.drawGameOver(); },
         ],
         gameStartRenderList = [
 
@@ -50,16 +50,71 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         myKeyboard.keyProcessed(keyIn);
     }
 
+    // function gameOver(){
+    //     if(creeps === 0){
+    //         end game.
+    //     }
+    // }
+
+    function scorez(time, keyIn){
+        console.log("Score ADDED");
+        axios.get('/scores/scores.txt').then((response) => {
+            console.log(response.data);});
+        myKeyboard.keyProcessed(keyIn);
+    }
+
+    function postScorez(time, keyIn){
+        let score = 5;
+        superagent.post('/scoresIn')
+            .send( { scoreFile: 'scores.txt' , addScore: '10' }).then((response) => {
+            console.log(response.data);
+        }).catch( (err) => {
+            console.log(err);
+        });
+        myKeyboard.keyProcessed(keyIn);
+    }
+
+
+        let gridCheck = document.querySelector('input[id="grid"]');
+        gridCheck.onchange = function() {
+            showGrid = false;
+            if(gridCheck.checked) {
+              showGrid = true;
+            }
+        }
+
+        let weaponCheck = document.querySelector('input[id="weapon"]');
+        weaponCheck.onchange = function() {
+            if(weaponCheck.checked) {
+                //add tower range render thing here.
+            }else if(weaponCheck.checked === false){
+                // does not clear when changed back.
+            }
+        }
+
+
     function initialize() {
         console.log('Tower game initializing...');
 
         gameInfo = {};
         backGround.src = backgroundImage;
         backGround.addEventListener('load', backgroundLoaded, false);
+        let optionsPopUp = document.getElementById('diaOptions');
         document.getElementById('startLevel').addEventListener(
             'click',
             function() { startLevel(); });
-        
+
+        document.getElementById('gameOptions').addEventListener(
+            'click',
+            function() { optionsPopUp.showModal(); });
+
+        document.getElementById('exitGame').addEventListener(
+            'click',
+            function() {
+                cancelNextRequest = true;
+                game.showScreen('main-menu');
+            });
+
         testTower = gameObjects.Tower({
             baseSprite: 'Images/turrets/turret-base.gif',
             weaponSprite: 'Images/turrets/turret-1-1.png',
@@ -67,13 +122,14 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             target: { x: 200, y: 100 },
             rotateRate: 6 * 3.14159 / 1000 // radians per second
         });
-        
+
         // Create the keyboard input handler and register the keyboard commands
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_P, postScorez);
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_S, scorez);
         myKeyboard.registerCommand(KeyEvent.DOM_VK_G, startLevel);
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
             cancelNextRequest = true;
-            //
             // Then, return to the main menu
             game.showScreen('main-menu');
         });
@@ -134,7 +190,9 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentUpdateAndRenderList.shift().call();
         }
         testTower.render();
-
+        if(showGrid){
+            graphics.drawGrid();
+        }
     }
 
     //------------------------------------------------------------------
