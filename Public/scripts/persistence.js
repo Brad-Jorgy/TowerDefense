@@ -4,14 +4,19 @@ MyGame.persistence = (function () {
     let highScores = {};
     let scores = [];
 
-    function add(highScores) {
-        //highScores[key] = value;
-        localStorage['MyGame.highScores'] = JSON.stringify(highScores);
+    function add(){
+        console.log("Score ADDED");
+        superagent.get('/scores/scores.txt').then((response) => {
+            console.log(response.data);});
     }
 
-    function remove(key) {
-        delete highScores[key];
-        localStorage['MyGame.highScores'] = JSON.stringify(highScores);
+    function postScorez(){
+        superagent.post('/scoresIn')
+            .send( { scoreFile: 'scores.txt' , addScore: '10' }).then((response) => {
+            console.log(response.data);
+        }).catch( (err) => {
+            console.log(err);
+        });
     }
 
     function getTopFive() {
@@ -32,7 +37,7 @@ MyGame.persistence = (function () {
 
     return{
         add: add,
-        remove: remove,
+        postScorez: postScorez,
         getTopFive: getTopFive,
     }
 }());
