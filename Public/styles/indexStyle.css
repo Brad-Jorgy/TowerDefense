@@ -1,3 +1,7 @@
+:root{
+    --game-area-primary-color: #444444;
+    --menu-primary-color: crimson;
+}
 
 .flex-container2{
     display: flex;
@@ -12,12 +16,12 @@
 .firstGameCanvas{
     width: 600px;
     height: 640px;
-    border: 10px solid red;
+    border: 10px solid var(--game-area-primary-color);
 }
 
 .flex-container3{
-    border: 10px solid red;
-    background-color: red;
+    border: 10px solid var(--game-area-primary-color);
+    background-color: var(--game-area-primary-color);
 }
 
 .firstMenuDiv{
@@ -29,11 +33,38 @@
     text-align: center;
 }
 
-.secondMenuDiv{
+.secondMenuDiv {
     align: center;
     width: 360px;
     height: 480px;
     border: 10px solid white;
+    display: flex;
+    justify-content: space-around;
+    flex-flow: row wrap;
+}
+
+#tower-container {
+    height: 60px;
+    display: flex;
+    justify-content: space-around;
+    flex-flow: row wrap;
+}
+
+.tower {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    border: solid 3px black;
+}
+
+#tower-container:hover > .tower {
+    opacity: 0.5;
+}
+
+#tower-container:hover > .tower:hover {
+    opacity: 1.0;
 }
 
 .thirdMenuDiv{
@@ -65,7 +96,7 @@
 }
 
 #game .options{
-    background-color: red;
+    background-color: var(--game-area-primary-color);
 }
 
 #main-menu #high-scores{
@@ -93,7 +124,7 @@
     padding: 30px;
     font-size: 150px;
     font-family: Arial;
-    color: crimson;
+    color: var(--menu-primary-color);
 }
 
 .secondContainer{
@@ -108,7 +139,7 @@
     padding: 30px;
     font-size: 35px;
     font-family: Arial;
-    color: crimson;
+    color: var(--menu-primary-color);
 }
 
 .menu {
@@ -134,7 +165,7 @@
     color: #CECEF6;
     width: 10em;
     height: 3em;
-    background: crimson;
+    background: var(--menu-primary-color);
     /*border: 0.1em solid rgb(255, 0, 0);*/
     border-radius: 0.5em;
     box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
