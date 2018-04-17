@@ -45,21 +45,19 @@
                     <dialog id="diaOptions">
                         <form method="dialog">
                             <section>
-                                <p><label for="grid">Grid:</label>
-                                    <select id="grid">
-                                        <option></option>
-                                        <option>Show Grid</option>
-                                    </select></p>
-                                <p><label for="weapon">Tower Coverage:</label>
-                                    <select id="weapon">
-                                        <option></option>
-                                        <option>Show Tower Weapon Coverage</option>
-                                    </select></p>
-                                <form action="">
-                                    Sell Tower:<input type="text" name="sellTower" value=""><br>
-                                    Upgrade Tower:<input type="text" name="upgradeTower" value=""><br>
-                                    <input type="submit" value="Submit">
-                                </form>
+                                <div>
+                                 <label for="grid" id="gridLabel">SHOW GAME GRID</label>
+                                 <input type="checkbox" id="grid">
+                                </div>
+                                <div>
+                                    <label for="weapon" id="weaponLabel">SHOW WEAPON COVERAGE</label>
+                                    <input type="checkbox" id="weapon">
+                                </div>
+                                <!--<form action="">-->
+                                    <!--Sell Tower:<input type="text" name="sellTower" value=""><br>-->
+                                    <!--Upgrade Tower:<input type="text" name="upgradeTower" value=""><br>-->
+                                    <!--<input type="submit" value="Submit">-->
+                                <!--</form>-->
 
                             </section>
                             <menu>
@@ -103,6 +101,7 @@
 <script src = "scripts/mainMenu.js"></script>
 <script src = "scripts/towerEvents.js"></script>
 <script src = "scripts/towerRenderer.js"></script>
+<script src = "scripts/gameObjects.js"></script>
 <script src = "scripts/towerPlay.js"></script>
 <script src = "scripts/highScores.js"></script>
 <script src = "scripts/options.js"></script>

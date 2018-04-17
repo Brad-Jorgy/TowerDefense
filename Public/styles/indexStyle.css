@@ -228,3 +228,8 @@
     position: absolute;
     margin: auto;
 }
+
+#weaponLabel, #gridLabel{
+    font-size: 20px;
+    color: crimson;
+}

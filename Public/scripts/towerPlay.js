@@ -1,7 +1,7 @@
-MyGame.screens['play-game'] = (function(game, graphics, events, input) {
+MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjects) {
     'use strict';
 
-    const backgroundImage = "./images/sand_template.jpg";
+    const backgroundImage = "./Images/sand_template.jpg";
     let backGround = new Image();
     let ready = false;
     let mouseCapture = false,
@@ -11,39 +11,36 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         gameInfo,
         actionList = [],
         lastTimeStamp,
-        gamePhase = 'levelOne',
+        gamePhase = 'play-game',
+        showGrid = false,
         currentUpdateAndRenderList = [],
-        levelOneRenderList = [
+        levelStaticRenderElements = [
             () => { graphics.drawBackground(backGround); },
             () => { graphics.renderWalls(); },
-            () => { graphics.drawGrid(); },
-            () => { graphics.textLevel("Level: 1"); },
             () => { graphics.updateTime(); },
             () => { graphics.updateMoney(); },
             () => { graphics.updateLife(); },
+        ],
+        levelOneRenderList = [
+            () => { graphics.textLevel("Level: 1"); },
         ],
         levelTwoRenderList = [
-            () => { graphics.drawBackground(backGround); },
-            () => { graphics.drawGrid(); },
             () => { graphics.textLevel("Level: 2"); },
-            () => { graphics.updateTime(); },
-            () => { graphics.updateMoney(); },
-            () => { graphics.updateLife(); },
         ],
         levelThreeRenderList = [
-            () => { graphics.drawBackground(backGround); },
-            () => { graphics.drawGrid(); },
             () => { graphics.textLevel("Level: 3"); },
-            () => { graphics.updateTime(); },
-            () => { graphics.updateMoney(); },
-            () => { graphics.updateLife(); },
         ],
         gameEndRenderList = [
             () => { graphics.drawGameOver(); },
         ],
         gameStartRenderList = [
 
-        ];
+        ],
+        demoRenderList = [
+
+        ],
+        testTower,
+        level = 'none';
 
     function startLevel(time, keyIn){
         console.log("level started");
@@ -77,9 +74,24 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         myKeyboard.keyProcessed(keyIn);
     }
 
-    function options(){
 
-    }
+        let gridCheck = document.querySelector('input[id="grid"]');
+        gridCheck.onchange = function() {
+            showGrid = false;
+            if(gridCheck.checked) {
+              showGrid = true;
+            }
+        }
+
+        let weaponCheck = document.querySelector('input[id="weapon"]');
+        weaponCheck.onchange = function() {
+            if(weaponCheck.checked) {
+                //add tower range render thing here.
+            }else if(weaponCheck.checked === false){
+                // does not clear when changed back.
+            }
+        }
+
 
     function initialize() {
         console.log('Tower game initializing...');
@@ -103,6 +115,14 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
                 game.showScreen('main-menu');
             });
 
+        testTower = gameObjects.Tower({
+            baseSprite: 'Images/turrets/turret-base.gif',
+            weaponSprite: 'Images/turrets/turret-1-1.png',
+            gridPosition: { x: 3, y: 5 },
+            target: { x: 200, y: 100 },
+            rotateRate: 6 * 3.14159 / 1000 // radians per second
+        });
+
         // Create the keyboard input handler and register the keyboard commands
         myKeyboard.registerCommand(KeyEvent.DOM_VK_P, postScorez);
         myKeyboard.registerCommand(KeyEvent.DOM_VK_S, scorez);
@@ -110,7 +130,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
             cancelNextRequest = true;
-            //
             // Then, return to the main menu
             game.showScreen('main-menu');
         });
@@ -140,23 +159,28 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         myMouse.update(elapsedTime);
         if (gamePhase === 'start-game') {
             currentUpdateAndRenderList = gameStartRenderList.slice(0);
-            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else if (gamePhase === 'game-over' ) {
             currentUpdateAndRenderList = gameEndRenderList.slice(0);
-            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
+        } else if (gamePhase === 'play-game') {
+            currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
+            testTower.update(elapsedTime);
+            if (level === 'levelOne') {
+                currentUpdateAndRenderList.push(...levelOneRenderList.slice(0));
+            } else if (level === 'levelTwo') {
+                currentUpdateAndRenderList.push(...levelTwoRenderList.slice(0));
+            } else if (level === 'levelThree') {
+                currentUpdateAndRenderList = levelThreeRenderList.slice(0);
+            }
         } else if (gamePhase === 'levelOne') {
             currentUpdateAndRenderList = levelOneRenderList.slice(0);
-            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else if (gamePhase === 'levelTwo') {
             currentUpdateAndRenderList = levelTwoRenderList.slice(0);
-            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else if (gamePhase === 'levelThree') {
             currentUpdateAndRenderList = levelThreeRenderList.slice(0);
-            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         } else {
             currentUpdateAndRenderList = demoRenderList.slice(0);
-            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         }
+        events.updateEvents(elapsedTime, currentUpdateAndRenderList);
 
     }
 
@@ -165,7 +189,10 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         while(currentUpdateAndRenderList.length) {
             currentUpdateAndRenderList.shift().call();
         }
-
+        testTower.render();
+        if(showGrid){
+            graphics.drawGrid();
+        }
     }
 
     //------------------------------------------------------------------
@@ -211,6 +238,11 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         cancelNextRequest = false;
         currentUpdateAndRenderList = gameStartRenderList;
 
+        // Testing turret rotation
+        myMouse.registerCommand('mousedown', function (e, elapsedTime) {
+            testTower.setTarget(e.clientX, e.clientY);
+        });
+
         requestAnimationFrame(gameLoop);
     }
 
@@ -219,4 +251,4 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input) {
         run : run
     }
 
-}(MyGame.game, MyGame.towerGraphics, MyGame.towerEvents, MyGame.input));
+}(MyGame.game, MyGame.towerGraphics, MyGame.towerEvents, MyGame.input, MyGame.objects));
