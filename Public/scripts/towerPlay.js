@@ -40,7 +40,11 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
         ],
         testTower,
-        level = 'none';
+        towerGroup,
+        level = 'none',
+        placeTowers = false,
+        currentTowerType = '';
+    const canvas = document.getElementById('canvas-main');
 
     function startLevel(time, keyIn){
         console.log("level started");
@@ -103,18 +107,39 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         document.getElementById('startLevel').addEventListener(
             'click',
             function() { startLevel(); });
-
+        
         document.getElementById('gameOptions').addEventListener(
             'click',
             function() { optionsPopUp.showModal(); });
-
+            
         document.getElementById('exitGame').addEventListener(
             'click',
             function() {
                 cancelNextRequest = true;
                 game.showScreen('main-menu');
-            });
-
+        });
+        
+        document.getElementById('tower1').addEventListener('click', ()=> {
+            placeTowers = true;
+            currentTowerType = 'tower1';
+        });
+        
+        document.getElementById('tower2').addEventListener('click', ()=> {
+            placeTowers = true;
+            currentTowerType = 'tower2';
+        });
+        
+        document.getElementById('tower3').addEventListener('click', ()=> {
+            placeTowers = true;
+            currentTowerType = 'tower3';
+        });
+        
+        document.getElementById('tower4').addEventListener('click', ()=> {
+            placeTowers = true;
+            currentTowerType = 'tower4';
+        });
+        
+        towerGroup = gameObjects.TowerGroup({});
         testTower = gameObjects.Tower({
             baseSprite: 'Images/turrets/turret-base.gif',
             weaponSprite: 'Images/turrets/turret-1-1.png',
@@ -164,6 +189,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         } else if (gamePhase === 'play-game') {
             currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
             testTower.update(elapsedTime);
+            towerGroup.update(elapsedTime);
             if (level === 'levelOne') {
                 currentUpdateAndRenderList.push(...levelOneRenderList.slice(0));
             } else if (level === 'levelTwo') {
@@ -190,6 +216,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentUpdateAndRenderList.shift().call();
         }
         testTower.render();
+        towerGroup.render();
         if(showGrid){
             graphics.drawGrid();
         }
@@ -233,6 +260,10 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         requestAnimationFrame(gameLoop);
     }
 
+    function alignToGameGrid(val) {
+        return Math.floor(val / graphics.cellWidth);
+    }
+
     function run() {
         lastTimeStamp = performance.now();
         cancelNextRequest = false;
@@ -240,7 +271,19 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
         // Testing turret rotation
         myMouse.registerCommand('mousedown', function (e, elapsedTime) {
-            testTower.setTarget(e.clientX, e.clientY);
+            if (placeTowers && e.target == canvas) {
+                let gridPosition = {
+                    x: alignToGameGrid(e.offsetX),
+                    y: alignToGameGrid(e.offsetY)
+                };
+                if (!towerGroup.towerExistsAtPosition(gridPosition)) {
+                    towerGroup.addTower(currentTowerType, gridPosition);
+                    placeTowers = false;
+                    currentTowerType = '';
+                }
+                
+                testTower.setTarget(e.offsetX, e.offsetY);
+            }
         });
 
         requestAnimationFrame(gameLoop);

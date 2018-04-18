@@ -70,6 +70,10 @@ MyGame.objects = (function (graphics) {
             x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth/2,
             y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth/2
         };
+        spec.target = {
+            x: spec.center.x + 50,
+            y: spec.center.y
+        };
         var that = {},
             baseSprite = graphics.Sprite({
                 sprite: spec.baseSprite,
@@ -129,11 +133,67 @@ MyGame.objects = (function (graphics) {
             };
         };
 
+        that.positionSame = (gridPosition) => {
+            return (gridPosition.x == spec.gridPosition.x && gridPosition.y == spec.gridPosition.y);
+        };
+
+        return that;
+    }
+
+    function TowerGroup(spec) {
+        let that = {
+        };
+        spec.towers = [];
+
+        that.towerExistsAtPosition = (gridPosition) => {
+            for (const tower of spec.towers) {
+                if (tower.positionSame(gridPosition)) return true;
+            }
+            return false;
+        };
+
+        that.addTower = (towerType, gridPosition) => {
+            let imgPath,
+                towerStats = {};
+            if (towerType === 'tower1') {
+                imgPath = 'Images/turrets/turret-1-1.png';
+            } else if (towerType === 'tower2') {
+                imgPath = 'Images/turrets/turret-2-1.png';
+            } else if (towerType === 'tower3') {
+                imgPath = 'Images/turrets/turret-3-1.png';
+            } else if (towerType === 'tower4') {
+                imgPath = 'Images/turrets/turret-4-1.png';
+            }
+            spec.towers.push(Tower({
+                baseSprite: 'Images/turrets/turret-base.gif',
+                weaponSprite: imgPath,
+                gridPosition: { x: gridPosition.x, y: gridPosition.y },
+                rotateRate: 6 * 3.14159 / 1000
+            }));
+        };
+
+        that.update = (elapsedTime) => {
+            for (const tower of spec.towers) {
+                if (tower) {
+                    tower.update(elapsedTime);
+                }
+            }
+        };
+
+        that.render = () => {
+            for (const tower of spec.towers) {
+                if (tower) {
+                    tower.render();
+                }
+            }
+        };
+
         return that;
     }
 
     return {
-        Tower: Tower
+        Tower: Tower,
+        TowerGroup: TowerGroup
     };
 
 }(MyGame.towerGraphics));
