@@ -1,15 +1,16 @@
 let express = require('express');
 let fs = require('fs');
 let readLine = require('readline');
-
+let bodyParser = require('body-parser');
 let app = express();
 
 app.use(express.static('./Public/'));
+app.use(bodyParser.json());
 app.get('/', function (req, res) {
-    res.sendFile( __dirname + "index.html" );
+    res.sendFile( __dirname + "/index.html" );
 });
 
-app.get('/Public/scores/:scoreFile', (req, res) => {                       //:scoreFile is a parameter that comes in with the URL
+app.get('/scores/:scoreFile', (req, res) => {                       //:scoreFile is a parameter that comes in with the URL
     fs.stat(`./scores/${ req.params.scoreFile}`, (err, stat) => {     // stat checks to see if file exists
         if (err === null) {
             const rl = readLine.createInterface({
@@ -31,16 +32,16 @@ app.get('/Public/scores/:scoreFile', (req, res) => {                       //:sc
     })
 });
 
-app.post('/Public/scores/:scoreFile/:score', (req, res) => {
-    fs.stat(`./scores/${ req.params.scoreFile }`, (err, stat) => {
+app.post('/scoresIn', (req, res) => {
+    fs.stat(`Public/scores/${ req.body.scoreFile }`, (err, stat) => {
         if (err === null) {
-            fs.appendFile(req.params.scoreFile, req.params.score, (err) => {
+            fs.appendFile(req.body.scoreFile, req.body.addScore, (err) => {
                 if (err !== null) {
                     res.status(500).send({ message: err.message });
                 }
             })
         } else {
-            fs.writeFile(`./scores/${ req.params.scoreFile}`, req.params.score, (err) => {
+            fs.writeFile(`./scores/${ req.body.scoreFile}`, req.body.score, (err) => {
                 if (err === null) {
                     res.status(201);
                 }

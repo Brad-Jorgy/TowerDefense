@@ -3,15 +3,12 @@ MyGame.screens['options'] = (function(game) {
     //
 
     function initialize() {
-        document.getElementById('options-back').addEventListener(
-            'click',
-            function() { game.showScreen('main-menu'); });
+
     }
 
     function run(){
 
     }
-
 
     return {
         initialize : initialize,

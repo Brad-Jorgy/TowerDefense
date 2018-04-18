@@ -1,4 +1,3 @@
-
 MyGame.input = (function() {
     'use strict';
 

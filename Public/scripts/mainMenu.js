@@ -6,10 +6,6 @@ MyGame.screens['main-menu'] = (function(game) {
             'click',
             function() { game.showScreen('play-game'); });
 
-        document.getElementById('id-options').addEventListener(
-            'click',
-            function() { game.showScreen('options'); });
-
         document.getElementById('id-high-scores').addEventListener(
             'click',
             function() { game.showScreen('high-scores'); });
