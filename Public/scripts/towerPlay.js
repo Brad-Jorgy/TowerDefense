@@ -11,7 +11,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         gameInfo,
         actionList = [],
         lastTimeStamp,
-        gamePhase = 'play-game',
+        gamePhase = '',
         showGrid = false,
         currentUpdateAndRenderList = [],
         levelStaticRenderElements = [
@@ -44,7 +44,9 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         level = 'none',
         placeTowers = false,
         currentTowerType = '',
-        testGroundCreep;
+        testGroundCreep1,
+        testGroundCreep2,
+        testFlyingCreep;
     const canvas = document.getElementById('canvas-main');
 
     function startLevel(time, keyIn){
@@ -148,9 +150,20 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             target: { x: 200, y: 100 },
             rotateRate: 6 * 3.14159 / 1000 // radians per second
         });
-        testGroundCreep = gameObjects.GroundCreep1({
+        testGroundCreep1 = gameObjects.GroundCreep1({
             gridPosition: { x: 0, y: 5 },
-            targetGridPosition: { x: 15, y: 5}
+            targetGridPosition: { x: 15, y: 5},
+            rotation: 0
+        });
+        testGroundCreep2 = gameObjects.GroundCreep2({
+            gridPosition: { x: 0, y: 6 },
+            targetGridPosition: { x: 15, y: 6},
+            rotation: 0
+        });
+        testFlyingCreep = gameObjects.FlyingCreep({
+            gridPosition: { x: 0, y: 7 },
+            targetGridPosition: { x: 15, y: 7},
+            rotation: 0
         });
 
         // Create the keyboard input handler and register the keyboard commands
@@ -195,7 +208,9 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
             testTower.update(elapsedTime);
             towerGroup.update(elapsedTime);
-            testGroundCreep.update(elapsedTime);
+            testGroundCreep1.update(elapsedTime);
+            testGroundCreep2.update(elapsedTime);
+            testFlyingCreep.update(elapsedTime);
             if (level === 'levelOne') {
                 currentUpdateAndRenderList.push(...levelOneRenderList.slice(0));
             } else if (level === 'levelTwo') {
@@ -223,7 +238,9 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         }
         testTower.render();
         towerGroup.render();
-        testGroundCreep.render();
+        testGroundCreep1.render();
+        testGroundCreep2.render();
+        testFlyingCreep.render();
         if(showGrid){
             graphics.drawGrid();
         }
@@ -275,6 +292,8 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         lastTimeStamp = performance.now();
         cancelNextRequest = false;
         currentUpdateAndRenderList = gameStartRenderList;
+
+        gamePhase = 'play-game';
 
         // Testing turret rotation
         myMouse.registerCommand('mousedown', function (e, elapsedTime) {

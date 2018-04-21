@@ -202,10 +202,6 @@ MyGame.objects = (function (graphics) {
     //
     //------------------------------------------------------------------
     function AnimatedModel(spec) {
-        spec.center = {
-            x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth / 2,
-            y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth / 2
-        };
         var that = {},
             sprite = graphics.SpriteSheet(spec);	// We contain a SpriteSheet, not inherited from, big difference
 
@@ -326,22 +322,80 @@ MyGame.objects = (function (graphics) {
     }
 
     function GroundCreep1(spec) {
-        let that = AnimatedModel({
-            spriteSheet: 'Images/creeps/creep1-blue.png',
-            spriteCount: 6,
-            spriteTime: [1000, 200, 100, 1000, 100, 200],	// milliseconds per sprite animation frame
-            gridPosition: spec.gridPosition,
-            rotation: spec.rotation,
+        spec.center = {
+            x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth / 2,
+            y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth / 2
+        };
+        let that = AnimatedModel(Object.assign({
+            spriteSheet: 'Images/creeps/creep2-red.png',
+            spriteCount: 4,
+            spriteTime: [200, 1000, 200, 600],	// milliseconds per sprite animation frame
             orientation: 0,				// Sprite orientation with respect to "forward"
-            moveRate: 200 / 1000,			// pixels per millisecond
+            moveRate: 50 / 1000,			// pixels per millisecond
             rotateRate: 3.14159 / 1000		// Radians per millisecond
-        });
+        }, spec));
         let base = {
             update: that.update
         };
 
         that.update = (elapsedTime) => {
-            // that.moveForward(elapsedTime);
+            if (elapsedTime){
+                that.moveForward(elapsedTime);
+            }
+            base.update(elapsedTime);
+        };
+        
+        return that;
+    }
+
+    function GroundCreep2(spec) {
+        spec.center = {
+            x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth / 2,
+            y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth / 2
+        };
+        let that = AnimatedModel(Object.assign({
+            spriteSheet: 'Images/creeps/creep1-blue.png',
+            spriteCount: 6,
+            spriteTime: [1000, 200, 100, 1000, 100, 200],	// milliseconds per sprite animation frame
+            orientation: 0,				// Sprite orientation with respect to "forward"
+            moveRate: 75 / 1000,			// pixels per millisecond
+            rotateRate: 3.14159 / 1000		// Radians per millisecond
+        }, spec));
+        let base = {
+            update: that.update
+        };
+
+        that.update = (elapsedTime) => {
+            if (elapsedTime) {
+                that.moveForward(elapsedTime);
+            }
+            base.update(elapsedTime);
+        };
+
+        return that;
+    }
+
+    function FlyingCreep(spec) {
+        spec.center = {
+            x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth / 2,
+            y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth / 2
+        };
+        let that = AnimatedModel(Object.assign({
+            spriteSheet: 'Images/creeps/creep3-green.png',
+            spriteCount: 4,
+            spriteTime: [1000, 200, 200, 200],	// milliseconds per sprite animation frame
+            orientation: 0,				// Sprite orientation with respect to "forward"
+            moveRate: 75 / 1000,			// pixels per millisecond
+            rotateRate: 3.14159 / 1000		// Radians per millisecond
+        }, spec));
+        let base = {
+            update: that.update
+        };
+
+        that.update = (elapsedTime) => {
+            if (elapsedTime){
+                that.moveForward(elapsedTime);
+            }
             base.update(elapsedTime);
         };
         
@@ -351,7 +405,9 @@ MyGame.objects = (function (graphics) {
     return {
         Tower: Tower,
         TowerGroup: TowerGroup,
-        GroundCreep1: GroundCreep1
+        GroundCreep1: GroundCreep1,
+        GroundCreep2: GroundCreep2,
+        FlyingCreep: FlyingCreep,
     };
 
 }(MyGame.towerGraphics));
