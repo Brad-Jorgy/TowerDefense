@@ -59,23 +59,24 @@
                         <form method="dialog">
                             <section>
                                 <div>
-                                 <label for="grid" id="gridLabel">SHOW GAME GRID</label>
-                                 <input type="checkbox" id="grid">
+                                    <label for="grid" id="gridLabel">SHOW GAME GRID</label>
+                                     <input type="checkbox" id="grid">
                                 </div>
                                 <div>
                                     <label for="weapon" id="weaponLabel">SHOW WEAPON COVERAGE</label>
                                     <input type="checkbox" id="weapon">
                                 </div>
-                                <!--<form action="">-->
-                                    <!--Sell Tower:<input type="text" name="sellTower" value=""><br>-->
-                                    <!--Upgrade Tower:<input type="text" name="upgradeTower" value=""><br>-->
-                                    <!--<input type="submit" value="Submit">-->
-                                <!--</form>-->
-
+                                <div id="hotKeyInputs">
+                                    <label for="upgradeTower" id="upgradeTowerLabel"></label>
+                                    <input type="text" id="upgradeTower" value=""><br>
+                                    <label for="sellTower" id="sellTowerLabel"></label>
+                                    <input type="text" id="sellTower" value=""><br>
+                                    <label for="startNextLevel" id="startNextLevelLabel"></label>
+                                    <input type="text" id="startNextLevel" value=""><br>
+                                </div>
                             </section>
-                            <menu>
-                                <button id="cancel" type="reset">Cancel</button>
-                                <button type="submit">Confirm</button>
+                            <menu align="center">
+                                <button type="submit">close</button>
                             </menu>
                         </form>
                     </dialog>
@@ -115,9 +116,12 @@
 <script src = "scripts/towerEvents.js"></script>
 <script src = "scripts/towerRenderer.js"></script>
 <script src = "scripts/gameObjects.js"></script>
+<script src = "scripts/sound.js"></script>
+<script src = "scripts/particleSystem.js"></script>
+<script src = "scripts/animation.js"></script>
+<!--<script src = "scripts/.js"></script>-->
 <script src = "scripts/towerPlay.js"></script>
 <script src = "scripts/highScores.js"></script>
-<script src = "scripts/options.js"></script>
 <script src = "scripts/credits.js"></script>
 
 </body>
