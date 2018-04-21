@@ -43,7 +43,8 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         towerGroup,
         level = 'none',
         placeTowers = false,
-        currentTowerType = '';
+        currentTowerType = '',
+        testGroundCreep;
     const canvas = document.getElementById('canvas-main');
 
     function startLevel(time, keyIn){
@@ -147,6 +148,10 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             target: { x: 200, y: 100 },
             rotateRate: 6 * 3.14159 / 1000 // radians per second
         });
+        testGroundCreep = gameObjects.GroundCreep1({
+            gridPosition: { x: 0, y: 5 },
+            targetGridPosition: { x: 15, y: 5}
+        });
 
         // Create the keyboard input handler and register the keyboard commands
         myKeyboard.registerCommand(KeyEvent.DOM_VK_P, postScorez);
@@ -190,6 +195,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
             testTower.update(elapsedTime);
             towerGroup.update(elapsedTime);
+            testGroundCreep.update(elapsedTime);
             if (level === 'levelOne') {
                 currentUpdateAndRenderList.push(...levelOneRenderList.slice(0));
             } else if (level === 'levelTwo') {
@@ -217,6 +223,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         }
         testTower.render();
         towerGroup.render();
+        testGroundCreep.render();
         if(showGrid){
             graphics.drawGrid();
         }
