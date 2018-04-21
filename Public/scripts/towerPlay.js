@@ -4,6 +4,12 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
     const backgroundImage = "./Images/sand_template.jpg";
     let backGround = new Image();
     let ready = false;
+    let upgradeTowerKey = KeyEvent.DOM_VK_U;
+    let upgradeTowerHandler = upgradeTower;
+    let sellTowerKey = KeyEvent.DOM_VK_S;
+    let sellTowerHandler = sellTower;
+    let startLevelKey = KeyEvent.DOM_VK_G;
+    let startLevelHandler = startLevel;
     let mouseCapture = false,
         myMouse = input.Mouse(),
         myKeyboard = input.Keyboard(),
@@ -60,6 +66,14 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
     //     }
     // }
 
+    function upgradeTower(){
+
+    }
+
+    function sellTower() {
+
+    }
+
     function scorez(time, keyIn){
         console.log("Score ADDED");
         axios.get('/scores/scores.txt').then((response) => {
@@ -96,6 +110,49 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             }
         }
 
+    function keyDown(e){
+       let newKey = e.key;
+       myKeyboard.redirectHere(undefined);
+    }
+
+    function getNewKey(keyIn){
+
+            if (keyIn === 'ut'){
+                myKeyboard.redirectHere((e) => {
+                    myKeyboard.unRegisterCommand(localStorage.getItem('upGradeTowerKey'));
+                    localStorage['upGradeTowerKey'] = e.code;
+                    document.getElementById("upgradeTowerLabel").innerHTML = "<div>Upgrade Tower HotKey: " + e.key + "</div>";
+                    document.getElementById("upgradeTower").value='';
+                    myKeyboard.keyProcessed(e.code);
+                    myKeyboard.registerCommand(e.code, upgradeTowerHandler);
+                    if (document.activeElement != document.body) document.activeElement.blur();
+                    myKeyboard.redirectHere(undefined);
+                });
+            }else if(keyIn === 'st'){
+                myKeyboard.redirectHere((e) => {
+                    myKeyboard.unRegisterCommand(localStorage.getItem('sellTowerKey'));
+                    localStorage['sellTowerKey'] = e.code;
+                    document.getElementById("sellTowerLabel").innerHTML = "<div>Sell Tower HotKey: " + e.key + "</div>";
+                    document.getElementById("sellTower").value='';
+                    myKeyboard.keyProcessed(e.code);
+                    myKeyboard.registerCommand(e.code, sellTowerHandler);
+                    if (document.activeElement != document.body) document.activeElement.blur();
+                    myKeyboard.redirectHere(undefined);
+                });
+            }else if(keyIn === 'sl'){
+                myKeyboard.redirectHere((e) => {
+                    myKeyboard.unRegisterCommand(localStorage.getItem('startLevelKey'));
+                    localStorage['startLevelKey'] = e.code;
+                    document.getElementById("startNextLevelLabel").innerHTML = "<div>Start Next Level HotKey: " + e.key + "</div>";
+                    document.getElementById("startNextLevel").value='';
+                    myKeyboard.keyProcessed(e.code);
+                    myKeyboard.registerCommand(e.code, startLevelHandler);
+                    if (document.activeElement != document.body) document.activeElement.blur();
+                    myKeyboard.redirectHere(undefined);
+                });
+            }
+    }
+
 
     function initialize() {
         console.log('Tower game initializing...');
@@ -110,14 +167,37 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         
         document.getElementById('gameOptions').addEventListener(
             'click',
-            function() { optionsPopUp.showModal(); });
+            function() {
+                document.getElementById("upgradeTowerLabel").innerHTML = "<div>Upgrade Tower HotKey: " + String.fromCharCode(localStorage.getItem('upGradeTowerKey')) + "</div>";
+                document.getElementById("sellTowerLabel").innerHTML = "<div>Sell Tower HotKey: " + String.fromCharCode(localStorage.getItem('sellTowerKey')) + "</div>";
+                document.getElementById("startNextLevelLabel").innerHTML = "<div>Start Next Level HotKey: " + String.fromCharCode(localStorage.getItem('startLevelKey')) + "</div>";
+                optionsPopUp.showModal();
+            });
+
+        document.getElementById('upgradeTower').addEventListener(
+            'focus',
+            function () {
+                getNewKey('ut');
+            });
+
+        document.getElementById('sellTower').addEventListener(
+            'focus',
+            function () {
+                getNewKey('st');
+            });
+
+        document.getElementById('startNextLevel').addEventListener(
+            'focus',
+            function () {
+                getNewKey('sl');
+            });
             
         document.getElementById('exitGame').addEventListener(
             'click',
             function() {
                 cancelNextRequest = true;
                 game.showScreen('main-menu');
-        });
+            });
         
         document.getElementById('tower1').addEventListener('click', ()=> {
             placeTowers = true;
@@ -149,9 +229,10 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         });
 
         // Create the keyboard input handler and register the keyboard commands
-        myKeyboard.registerCommand(KeyEvent.DOM_VK_P, postScorez);
-        myKeyboard.registerCommand(KeyEvent.DOM_VK_S, scorez);
-        myKeyboard.registerCommand(KeyEvent.DOM_VK_G, startLevel);
+
+        myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey') || upgradeTowerKey, postScorez);  //Need upgrade tower function
+        myKeyboard.registerCommand(localStorage.getItem('sellTowerKey') || sellTowerKey, scorez);              // Sell tower function needed
+        myKeyboard.registerCommand(localStorage.getItem('startLevelKey') || startLevelKey, startLevel);       //Need to fix when setting buttons
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
             cancelNextRequest = true;
@@ -159,7 +240,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             game.showScreen('main-menu');
         });
 
-        //
         // Create an ability to move the logo using the mouse
         // myMouse = input.Mouse();
         // myMouse.registerCommand('mousedown', function(e) {
@@ -291,7 +371,8 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
     return {
         initialize : initialize,
-        run : run
+        run : run,
+        getNewKey: getNewKey,
     }
 
 }(MyGame.game, MyGame.towerGraphics, MyGame.towerEvents, MyGame.input, MyGame.objects));

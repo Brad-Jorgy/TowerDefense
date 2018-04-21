@@ -74,13 +74,29 @@ MyGame.input = (function() {
     }
 
     function Keyboard() {
+        let sendHere = undefined;
         let that = {
             keys : {},
             handlers : []
         };
 
+        that.redirectHere = function(functionIn) {
+            sendHere = functionIn;
+        };
+
+        that.unRegisterCommand = function(key) {
+            let found = that.handlers.findIndex((element) => {
+                return element.key === key;
+            });
+            that.handlers.splice(found, 1);
+        };
+
         function keyDown(e) {
             that.keys[e.keyCode] = e.timeStamp;
+            if (sendHere) {
+                sendHere({ code: e.keyCode, key: e.key });
+                // sendHere = undefined;
+            }
         }
 
         function keyPress(e) {

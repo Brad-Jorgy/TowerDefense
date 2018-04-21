@@ -16,6 +16,13 @@ MyGame.towerGraphics = (function() {
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         ctx.fillText("SCORE: " + score, 510, 590);
+
+        if (creep === death) {
+        score += 10;
+        creep = creep - 1;
+        money += 10;
+        }
+
     }
 
 

@@ -9,8 +9,8 @@ MyGame.screens['high-scores'] = (function(game, persistence) {
             function() { game.showScreen('main-menu'); });
     }
 
-    function run() {
-        presentScores = persistence.getTopFive();
+    async function run() {
+        presentScores = await persistence.getTopFive();
         for(var i =0; i < presentScores.length; i++) {
             document.getElementById("scoreList").innerHTML += "<li>" + presentScores[i] + "</li>";
         }
