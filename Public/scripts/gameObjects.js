@@ -144,6 +144,138 @@ MyGame.objects = (function (graphics) {
         return that;
     }
 
+    function GroundBombTower(spec) {
+        let level = 1;
+        let that = Tower(Object.assign({
+            baseSprite: 'Images/turrets/turret-base.gif',
+            weaponSprite: 'Images/turrets/turret-2-1.png',
+            gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
+            rotateRate: 6 * 3.14159 / 1000
+        },spec));
+        // Add stats to spec
+        
+        let base = {
+            update: that.update
+        };
+        
+        that.update = (elapsedTime) => {
+            base.update(elapsedTime);
+        };
+
+        that.upgradeTower = () => {
+            if (level == 1) {
+                spec.weaponSprite = 'Images/turrets/turret-2-2.png';
+                level = 2;
+                //change stats
+            } else if (level == 2) {
+                spec.weaponSprite = 'Images/turrets/turret-2-3.png';
+                level = 3;
+                //change stats
+            }
+        };
+
+        return that;
+    }
+
+    function GroundProjectileTower(spec) {
+        let level = 1;
+        let that = Tower(Object.assign({
+            baseSprite: 'Images/turrets/turret-base.gif',
+            weaponSprite: 'Images/turrets/turret-1-1.png',
+            gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
+            rotateRate: 6 * 3.14159 / 1000
+        },spec));
+        // Add stats to spec
+        
+        let base = {
+            update: that.update
+        };
+        
+        that.update = (elapsedTime) => {
+            base.update(elapsedTime);
+        };
+
+        that.upgradeTower = () => {
+            if (level == 1) {
+                spec.weaponSprite = 'Images/turrets/turret-1-2.png';
+                level = 2;
+                //change stats
+            } else if (level == 2) {
+                spec.weaponSprite = 'Images/turrets/turret-1-3.png';
+                level = 3;
+                //change stats
+            }
+        };
+
+        return that;
+    }
+
+    function AirMissileTower(spec) {
+        let level = 1;
+        let that = Tower(Object.assign({
+            baseSprite: 'Images/turrets/turret-base.gif',
+            weaponSprite: 'Images/turrets/turret-4-1.png',
+            gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
+            rotateRate: 6 * 3.14159 / 1000
+        },spec));
+        // Add stats to spec
+        
+        let base = {
+            update: that.update
+        };
+        
+        that.update = (elapsedTime) => {
+            base.update(elapsedTime);
+        };
+
+        that.upgradeTower = () => {
+            if (level == 1) {
+                spec.weaponSprite = 'Images/turrets/turret-4-2.png';
+                level = 2;
+                //change stats
+            } else if (level == 2) {
+                spec.weaponSprite = 'Images/turrets/turret-4-3.png';
+                level = 3;
+                //change stats
+            }
+        };
+
+        return that;
+    }
+
+    function AirProjectileTower(spec) {
+        let level = 1;
+        let that = Tower(Object.assign({
+            baseSprite: 'Images/turrets/turret-base.gif',
+            weaponSprite: 'Images/turrets/turret-3-1.png',
+            gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
+            rotateRate: 6 * 3.14159 / 1000
+        },spec));
+        // Add stats to spec
+        
+        let base = {
+            update: that.update
+        };
+        
+        that.update = (elapsedTime) => {
+            base.update(elapsedTime);
+        };
+
+        that.upgradeTower = () => {
+            if (level == 1) {
+                spec.weaponSprite = 'Images/turrets/turret-3-2.png';
+                level = 2;
+                //change stats
+            } else if (level == 2) {
+                spec.weaponSprite = 'Images/turrets/turret-3-3.png';
+                level = 3;
+                //change stats
+            }
+        };
+
+        return that;
+    }
+
     function TowerGroup(spec) {
         let that = {
         };
@@ -157,23 +289,25 @@ MyGame.objects = (function (graphics) {
         };
 
         that.addTower = (towerType, gridPosition) => {
-            let imgPath,
-                towerStats = {};
+            let tower;
             if (towerType === 'tower1') {
-                imgPath = 'Images/turrets/turret-1-1.png';
+                tower = GroundProjectileTower({
+                    gridPosition: gridPosition
+                });
             } else if (towerType === 'tower2') {
-                imgPath = 'Images/turrets/turret-2-1.png';
+                tower = GroundBombTower({
+                    gridPosition: gridPosition
+                });
             } else if (towerType === 'tower3') {
-                imgPath = 'Images/turrets/turret-3-1.png';
+                tower = AirProjectileTower({
+                    gridPosition: gridPosition
+                });
             } else if (towerType === 'tower4') {
-                imgPath = 'Images/turrets/turret-4-1.png';
+                tower = AirMissileTower({
+                    gridPosition: gridPosition
+                });
             }
-            spec.towers.push(Tower({
-                baseSprite: 'Images/turrets/turret-base.gif',
-                weaponSprite: imgPath,
-                gridPosition: { x: gridPosition.x, y: gridPosition.y },
-                rotateRate: 6 * 3.14159 / 1000
-            }));
+            spec.towers.push(tower);
         };
 
         that.update = (elapsedTime) => {
