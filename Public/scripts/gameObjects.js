@@ -393,6 +393,10 @@ MyGame.objects = (function (graphics) {
             };
         };
 
+        that.getHealth = () => {
+            return spec.health;
+        };
+
         return that;
     }
 
@@ -466,7 +470,8 @@ MyGame.objects = (function (graphics) {
             spriteTime: [200, 1000, 200, 600],	// milliseconds per sprite animation frame
             orientation: 0,				// Sprite orientation with respect to "forward"
             moveRate: 50 / 1000,			// pixels per millisecond
-            rotateRate: 3.14159 / 1000		// Radians per millisecond
+            rotateRate: 3.14159 / 1000,		// Radians per millisecond
+            health: 100
         }, spec));
         let base = {
             update: that.update
@@ -479,6 +484,10 @@ MyGame.objects = (function (graphics) {
             base.update(elapsedTime);
         };
         
+        that.getGridPosition = () => {
+            return { x: alignToGameGrid(spec.center.x), y: alignToGameGrid(spec.center.y)};
+        };
+
         return that;
     }
 
@@ -493,7 +502,8 @@ MyGame.objects = (function (graphics) {
             spriteTime: [1000, 200, 100, 1000, 100, 200],	// milliseconds per sprite animation frame
             orientation: 0,				// Sprite orientation with respect to "forward"
             moveRate: 75 / 1000,			// pixels per millisecond
-            rotateRate: 3.14159 / 1000		// Radians per millisecond
+            rotateRate: 3.14159 / 1000,		// Radians per millisecond
+            health: 100
         }, spec));
         let base = {
             update: that.update
@@ -504,6 +514,10 @@ MyGame.objects = (function (graphics) {
                 that.moveForward(elapsedTime);
             }
             base.update(elapsedTime);
+        };
+
+        that.getGridPosition = () => {
+            return { x: alignToGameGrid(spec.center.x), y: alignToGameGrid(spec.center.y)};
         };
 
         return that;
@@ -520,7 +534,8 @@ MyGame.objects = (function (graphics) {
             spriteTime: [1000, 200, 200, 200],	// milliseconds per sprite animation frame
             orientation: 0,				// Sprite orientation with respect to "forward"
             moveRate: 75 / 1000,			// pixels per millisecond
-            rotateRate: 3.14159 / 1000		// Radians per millisecond
+            rotateRate: 3.14159 / 1000,		// Radians per millisecond
+            health: 100
         }, spec));
         let base = {
             update: that.update
@@ -533,15 +548,59 @@ MyGame.objects = (function (graphics) {
             base.update(elapsedTime);
         };
         
+        that.getGridPosition = () => {
+            return { x: alignToGameGrid(spec.center.x), y: alignToGameGrid(spec.center.y)};
+        };
+
+        return that;
+    }
+
+    function CreepManager(spec) {
+        let that = {};
+
+        spec.creeps = [];
+
+        that.addCreep = (creepType, creepSpecs) => {
+            let creep;
+            if (creepType === 'creep1') {
+                creep = GroundCreep1(creepSpecs);
+            } else if (creepType === 'creep2') {
+                creep = GroundCreep2(creepSpecs);
+            } else if (creepType === 'creep3') {
+                creep = FlyingCreep(creepSpecs);
+            }
+            spec.creeps.push(creep);
+        };
+
+        that.update = (elapsedTime) => {
+            let creepsToKeep = [];
+            for (const creep of spec.creeps) {
+                if (creep) {
+                    creep.update(elapsedTime);
+                    let newGridPosition = creep.getGridPosition();
+                    if (newGridPosition.x < 15 && newGridPosition.y < 15 && creep.getHealth() > 0) {
+                        creepsToKeep.push(creep);
+                    }
+                }
+            }
+            spec.creeps = creepsToKeep;
+        };
+
+        that.render = () => {
+            for (const creep of spec.creeps) {
+                if (creep) {
+                    creep.render();
+                }
+            }
+        };
+
         return that;
     }
 
     return {
         Tower: Tower,
         TowerGroup: TowerGroup,
-        GroundCreep1: GroundCreep1,
-        GroundCreep2: GroundCreep2,
-        FlyingCreep: FlyingCreep,
+        CreepManager: CreepManager,
     };
 
 }(MyGame.towerGraphics));

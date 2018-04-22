@@ -50,9 +50,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         level = 'none',
         placeTowers = false,
         currentTowerType = '',
-        testGroundCreep1,
-        testGroundCreep2,
-        testFlyingCreep;
+        myCreepManager;
     const canvas = document.getElementById('canvas-main');
 
     function startLevel(time, keyIn){
@@ -230,17 +228,18 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             target: { x: 200, y: 100 },
             rotateRate: 6 * 3.14159 / 1000 // radians per second
         });
-        testGroundCreep1 = gameObjects.GroundCreep1({
+        myCreepManager = gameObjects.CreepManager({});
+        myCreepManager.addCreep('creep1', {
             gridPosition: { x: 0, y: 5 },
             targetGridPosition: { x: 15, y: 5},
             rotation: 0
         });
-        testGroundCreep2 = gameObjects.GroundCreep2({
+        myCreepManager.addCreep('creep2', {
             gridPosition: { x: 0, y: 6 },
             targetGridPosition: { x: 15, y: 6},
             rotation: 0
         });
-        testFlyingCreep = gameObjects.FlyingCreep({
+        myCreepManager.addCreep('creep3', {
             gridPosition: { x: 0, y: 7 },
             targetGridPosition: { x: 15, y: 7},
             rotation: 0
@@ -288,9 +287,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
             testTower.update(elapsedTime);
             towerGroup.update(elapsedTime);
-            testGroundCreep1.update(elapsedTime);
-            testGroundCreep2.update(elapsedTime);
-            testFlyingCreep.update(elapsedTime);
+            myCreepManager.update(elapsedTime);
             if (level === 'levelOne') {
                 currentUpdateAndRenderList.push(...levelOneRenderList.slice(0));
             } else if (level === 'levelTwo') {
@@ -318,9 +315,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         }
         testTower.render();
         towerGroup.render();
-        testGroundCreep1.render();
-        testGroundCreep2.render();
-        testFlyingCreep.render();
+        myCreepManager.render();
         if(showGrid){
             graphics.drawGrid();
         }
