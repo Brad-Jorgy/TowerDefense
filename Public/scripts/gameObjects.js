@@ -59,6 +59,10 @@ MyGame.objects = (function (graphics) {
         }
     }
 
+    function alignToGameGrid(val) {
+        return Math.floor(val / graphics.cellWidth);
+    }
+
     //------------------------------------------------------------------
     //
     // Defines a tower that has a base sprite and a weapon sprite that will
@@ -191,9 +195,219 @@ MyGame.objects = (function (graphics) {
         return that;
     }
 
+    //------------------------------------------------------------------
+    //
+    // Defines a game object/model that animates simply due to the passage
+    // of time.
+    //
+    //------------------------------------------------------------------
+    function AnimatedModel(spec) {
+        var that = {},
+            sprite = graphics.SpriteSheet(spec);	// We contain a SpriteSheet, not inherited from, big difference
+
+        that.update = function (elapsedTime) {
+            sprite.update(elapsedTime);
+        };
+
+        that.render = function () {
+            sprite.draw();
+        };
+
+        that.rotateRight = function (elapsedTime) {
+            spec.rotation += spec.rotateRate * (elapsedTime);
+        };
+
+        that.rotateLeft = function (elapsedTime) {
+            spec.rotation -= spec.rotateRate * (elapsedTime);
+        };
+
+        //------------------------------------------------------------------
+        //
+        // Move in the direction the sprite is facing
+        //
+        //------------------------------------------------------------------
+        that.moveForward = function (elapsedTime) {
+            //
+            // Create a normalized direction vector
+            var vectorX = Math.cos(spec.rotation + spec.orientation),
+                vectorY = Math.sin(spec.rotation + spec.orientation);
+            //
+            // With the normalized direction vector, move the center of the sprite
+            spec.center.x += (vectorX * spec.moveRate * elapsedTime);
+            spec.center.y += (vectorY * spec.moveRate * elapsedTime);
+        };
+
+        //------------------------------------------------------------------
+        //
+        // Move in the negative direction the sprite is facing
+        //
+        //------------------------------------------------------------------
+        that.moveBackward = function (elapsedTime) {
+            //
+            // Create a normalized direction vector
+            var vectorX = Math.cos(spec.rotation + spec.orientation),
+                vectorY = Math.sin(spec.rotation + spec.orientation);
+            //
+            // With the normalized direction vector, move the center of the sprite
+            spec.center.x -= (vectorX * spec.moveRate * elapsedTime);
+            spec.center.y -= (vectorY * spec.moveRate * elapsedTime);
+        };
+
+        that.getGridPosition = () => {
+            return {
+                x: alignToGameGrid(spec.center.x)
+            };
+        };
+
+        return that;
+    }
+
+    //------------------------------------------------------------------
+    //
+    // Defines a game object/model that animates based upon the elapsed time
+    // that occurs only when moving.
+    //
+    //------------------------------------------------------------------
+    function AnimatedMoveModel(spec) {
+        var that = AnimatedModel(spec),	// Inherit from AnimatedModel
+            base = {
+                moveForward: that.moveForward,
+                moveBackward: that.moveBackward,
+                rotateRight: that.rotateRight,
+                rotateLeft: that.rotateLeft,
+                update: that.update
+            },
+            didMoveForward = false,
+            didMoveBackward = false;
+
+        //------------------------------------------------------------------
+        //
+        // Replacing the update function from the base object.  In this update
+        // we check to see if any movement was performed, if so, then the animation
+        // is updated.
+        //
+        //------------------------------------------------------------------
+        that.update = function (elapsedTime) {
+            if (didMoveForward === true) {
+                base.update(elapsedTime, true);
+            } else if (didMoveBackward === true) {
+                base.update(elapsedTime, false);
+            }
+
+            didMoveForward = false;
+            didMoveBackward = false;
+        };
+
+        that.moveForward = function (elapsedTime) {
+            base.moveForward(elapsedTime);
+            didMoveForward = true;
+        };
+
+        that.moveBackward = function (elapsedTime) {
+            base.moveBackward(elapsedTime);
+            didMoveBackward = true;
+        };
+
+        that.rotateRight = function (elapsedTime) {
+            base.rotateRight(elapsedTime);
+            didMoveForward = true;
+        };
+
+        that.rotateLeft = function (elapsedTime) {
+            base.rotateLeft(elapsedTime);
+            didMoveForward = true;
+        };
+
+        return that;
+    }
+
+    function GroundCreep1(spec) {
+        spec.center = {
+            x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth / 2,
+            y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth / 2
+        };
+        let that = AnimatedModel(Object.assign({
+            spriteSheet: 'Images/creeps/creep2-red.png',
+            spriteCount: 4,
+            spriteTime: [200, 1000, 200, 600],	// milliseconds per sprite animation frame
+            orientation: 0,				// Sprite orientation with respect to "forward"
+            moveRate: 50 / 1000,			// pixels per millisecond
+            rotateRate: 3.14159 / 1000		// Radians per millisecond
+        }, spec));
+        let base = {
+            update: that.update
+        };
+
+        that.update = (elapsedTime) => {
+            if (elapsedTime){
+                that.moveForward(elapsedTime);
+            }
+            base.update(elapsedTime);
+        };
+        
+        return that;
+    }
+
+    function GroundCreep2(spec) {
+        spec.center = {
+            x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth / 2,
+            y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth / 2
+        };
+        let that = AnimatedModel(Object.assign({
+            spriteSheet: 'Images/creeps/creep1-blue.png',
+            spriteCount: 6,
+            spriteTime: [1000, 200, 100, 1000, 100, 200],	// milliseconds per sprite animation frame
+            orientation: 0,				// Sprite orientation with respect to "forward"
+            moveRate: 75 / 1000,			// pixels per millisecond
+            rotateRate: 3.14159 / 1000		// Radians per millisecond
+        }, spec));
+        let base = {
+            update: that.update
+        };
+
+        that.update = (elapsedTime) => {
+            if (elapsedTime) {
+                that.moveForward(elapsedTime);
+            }
+            base.update(elapsedTime);
+        };
+
+        return that;
+    }
+
+    function FlyingCreep(spec) {
+        spec.center = {
+            x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth / 2,
+            y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth / 2
+        };
+        let that = AnimatedModel(Object.assign({
+            spriteSheet: 'Images/creeps/creep3-green.png',
+            spriteCount: 4,
+            spriteTime: [1000, 200, 200, 200],	// milliseconds per sprite animation frame
+            orientation: 0,				// Sprite orientation with respect to "forward"
+            moveRate: 75 / 1000,			// pixels per millisecond
+            rotateRate: 3.14159 / 1000		// Radians per millisecond
+        }, spec));
+        let base = {
+            update: that.update
+        };
+
+        that.update = (elapsedTime) => {
+            if (elapsedTime){
+                that.moveForward(elapsedTime);
+            }
+            base.update(elapsedTime);
+        };
+        
+        return that;
+    }
+
     return {
         Tower: Tower,
-        TowerGroup: TowerGroup
+        TowerGroup: TowerGroup,
+        GroundCreep1: GroundCreep1,
+        GroundCreep2: GroundCreep2,
+        FlyingCreep: FlyingCreep,
     };
 
 }(MyGame.towerGraphics));
