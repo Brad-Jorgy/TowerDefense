@@ -248,8 +248,8 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
         // Create the keyboard input handler and register the keyboard commands
 
-        myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey') || upgradeTowerKey, postScorez);  //Need upgrade tower function
-        myKeyboard.registerCommand(localStorage.getItem('sellTowerKey') || sellTowerKey, scorez);              // Sell tower function needed
+        myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey') || upgradeTowerKey, upgradeTower);  //Need upgrade tower function
+        myKeyboard.registerCommand(localStorage.getItem('sellTowerKey') || sellTowerKey, sellTower);              // Sell tower function needed
         myKeyboard.registerCommand(localStorage.getItem('startLevelKey') || startLevelKey, startLevel);       //Need to fix when setting buttons
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
@@ -257,23 +257,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             // Then, return to the main menu
             game.showScreen('main-menu');
         });
-
-        // Create an ability to move the logo using the mouse
-        // myMouse = input.Mouse();
-        // myMouse.registerCommand('mousedown', function(e) {
-        //   mouseCapture = true;
-        //   myTexture.moveTo({x : e.clientX, y : e.clientY});
-        // });
-        //
-        // myMouse.registerCommand('mouseup', function() {
-        //   mouseCapture = false;
-        // });
-        //
-        // myMouse.registerCommand('mousemove', function(e) {
-        //   if (mouseCapture) {
-        //     myTexture.moveTo({x : e.clientX, y : e.clientY});
-        //   }
-        // });
     }
 
 
