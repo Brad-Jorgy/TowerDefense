@@ -68,7 +68,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
     // }
 
     function upgradeTower(){
-
+        towerGroup.upgradeSelected();
     }
 
     function sellTower() {
@@ -227,6 +227,18 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentTowerType = 'tower4';
             towerButton4.classList.toggle('tower-active');
         });
+
+        document.getElementById('spec-upgrade-tower').addEventListener('click', () => {
+            towerGroup.upgradeSelected();
+        });
+
+        document.getElementById('spec-cancel').addEventListener('click', () => {
+            towerGroup.deselectAll();
+            let activeTowerButtons = document.getElementsByClassName('tower-active');
+            for (const active of activeTowerButtons) {
+                active.classList.remove('tower-active');
+            }
+        });
         
         towerGroup = gameObjects.TowerGroup({});
         testTower = gameObjects.Tower({
@@ -235,7 +247,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             gridPosition: { x: 3, y: 5 },
             target: { x: 200, y: 100 },
             rotateRate: 6 * 3.14159 / 1000, // radians per second
-            radius: 3
+            radius: 3 * graphics.gridCellWidth
         });
         myCreepManager = gameObjects.CreepManager({});
         myCreepManager.addCreep('creep1', {

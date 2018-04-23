@@ -226,11 +226,15 @@ MyGame.towerGraphics = (function() {
 
         //
         // The other side of that hack job
-        that.drawArc = function (radius, color) {
-            ctx.fillStyle = color || 'rgba(255, 0, 0, 0.5)';
+        that.drawArc = function (radius) {
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
             ctx.beginPath();
             ctx.arc(spec.center.x, spec.center.y, radius*squares, 0, 2 * Math.PI);
             ctx.fill();
+        };
+
+        that.updateImage = (sprite) => {
+            image.src = sprite;
         };
 
         return that;

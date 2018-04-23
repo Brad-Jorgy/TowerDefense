@@ -40,7 +40,7 @@
     border: 10px solid white;
     display: flex;
     justify-content: space-between;
-    flex-flow: column wrap;
+    flex-flow: column nowrap;
     font-family: Arial, sans-serif;
     font-size: 28px;
     color: white;
@@ -76,6 +76,10 @@
 
 #tower-specs {
     margin: 15px;
+}
+
+#tower-specs.hide {
+    display: none;
 }
 
 .spec-row {
