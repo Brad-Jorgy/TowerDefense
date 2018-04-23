@@ -306,7 +306,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentUpdateAndRenderList = gameEndRenderList.slice(0);
         } else if (gamePhase === 'play-game') {
             currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
-            // testTower.update(elapsedTime);
+            testTower.update(elapsedTime);
             towerGroup.update(elapsedTime);
             myCreepManager.update(elapsedTime);
             if (level === 'levelOne') {
@@ -334,7 +334,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         while(currentUpdateAndRenderList.length) {
             currentUpdateAndRenderList.shift().call();
         }
-        // testTower.render();
+        testTower.render();
         towerGroup.render();
         myCreepManager.render();
         if(showGrid){
@@ -409,7 +409,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
                     for (const active of activeTowerButtons) {
                         active.classList.remove('tower-active');
                     }
-                    // testTower.setTarget(e.offsetX, e.offsetY);
+                    testTower.setTarget(e.offsetX, e.offsetY);
                 } else {
                     if (towerGroup.towerExistsAtPosition(gridPosition)) {
                         towerGroup.setSelected(gridPosition);
