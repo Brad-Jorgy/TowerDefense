@@ -483,7 +483,6 @@ MyGame.objects = (function (graphics) {
                     tower.render();
                 }
             }
-            graphics.stroke();
         };
 
         that.upgradeSelected = () => {
