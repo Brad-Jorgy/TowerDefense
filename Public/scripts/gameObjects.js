@@ -5,7 +5,10 @@ MyGame.objects = (function (graphics, shortestPath) {
         specLevel = document.getElementById('tower-level'),
         specRange = document.getElementById('range'),
         specDamage = document.getElementById('damage'),
-        specFireRate = document.getElementById('fire-rate');
+        specCost = document.getElementById('tower-cost'),
+        specSellVal = document.getElementById('tower-sell-val'),
+        specFireRate = document.getElementById('fire-rate'),
+        specCostTitle = document.getElementById('tower-cost-label');
 
     //------------------------------------------------------------------
     //
@@ -137,18 +140,27 @@ MyGame.objects = (function (graphics, shortestPath) {
             }
         };
 
-        that.displayStats = () => {
+        that.displayStats = (showSellValue = true) => {
             specName.innerHTML = spec.towerName;
             specTargetType.innerHTML = spec.creepType;
             specLevel.innerHTML = spec.level;
             specRange.innerHTML = spec.radius;
             specDamage.innerHTML = spec.damage;
             specFireRate.innerHTML = spec.fireRate;
+            specCost.innerHTML = spec.cost;
+            if (showSellValue) {
+                specSellVal.innerHTML = spec.sellValue;
+                specCostTitle.innerHTML = 'Upgrade Cost';
+                document.getElementById('sell-row').classList.remove('hide');
+            } else {
+                specCostTitle.innerHTML = 'Cost';
+                document.getElementById('sell-row').classList.toggle('hide', true);
+            }
             document.getElementById('tower-specs').classList.remove('hide');
         };
 
         that.upgradable = () => {
-            return (spec.level < 3 /*TODO: check if funds available to purchase tower*/);
+            return (spec.level < 3);
         };
 
         that.upgradeTower = (upgradeData) => {
@@ -156,7 +168,19 @@ MyGame.objects = (function (graphics, shortestPath) {
             spec.radius = upgradeData.radius;
             spec.damage = upgradeData.damage;
             spec.level = upgradeData.level;
-            // TODO: remove money from available money
+        };
+
+        that.getCost = () => {
+            return spec.cost;
+        };
+
+        that.getSellVal = () => {
+            return spec.sellValue;
+        };
+
+        that.animateSell = () => {
+            graphics.sold(spec.center.x, spec.center.y);
+            graphics.smoke(spec.center.x, spec.center.y);
         };
 
         //------------------------------------------------------------------
@@ -192,6 +216,7 @@ MyGame.objects = (function (graphics, shortestPath) {
             cost: 20,
             level: 1
         };
+        stats.sellValue = Math.ceil(stats.cost * 0.8);
         Object.assign(spec, stats);
 
         let that = Tower(Object.assign({
@@ -215,21 +240,25 @@ MyGame.objects = (function (graphics, shortestPath) {
                 spec.level = 2;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-2-2.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             } else if (spec.level == 2) {
                 spec.level = 3;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-2-3.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             }
             that.displayStats();
@@ -248,6 +277,7 @@ MyGame.objects = (function (graphics, shortestPath) {
             cost: 10,
             level: 1
         };
+        stats.sellValue = Math.ceil(stats.cost * 0.8);
         Object.assign(spec, stats);
 
         let that = Tower(Object.assign({
@@ -271,21 +301,25 @@ MyGame.objects = (function (graphics, shortestPath) {
                 spec.level = 2;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-1-2.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             } else if (spec.level == 2) {
                 spec.level = 3;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-1-3.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             }
             that.displayStats();
@@ -304,6 +338,9 @@ MyGame.objects = (function (graphics, shortestPath) {
             cost: 10,
             level: 1
         };
+        stats.sellValue = Math.ceil(stats.cost * 0.8);
+        console.log(stats);
+        
         Object.assign(spec, stats);
 
         let that = Tower(Object.assign({
@@ -327,21 +364,25 @@ MyGame.objects = (function (graphics, shortestPath) {
                 spec.level = 2;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-4-2.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             } else if (spec.level == 2) {
                 spec.level = 3;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-4-3.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             }
             that.displayStats();
@@ -360,6 +401,7 @@ MyGame.objects = (function (graphics, shortestPath) {
             cost: 10,
             level: 1
         };
+        stats.sellValue = Math.ceil(stats.cost * 0.8);
         Object.assign(spec, stats);
 
         let that = Tower(Object.assign({
@@ -383,21 +425,25 @@ MyGame.objects = (function (graphics, shortestPath) {
                 spec.level = 2;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-3-2.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             } else if (spec.level == 2) {
                 spec.level = 3;
                 spec.damage += 10;
                 spec.radius += 1;
+                spec.sellValue += Math.ceil(spec.cost * 0.8);
                 base.upgradeTower({
                     weaponSprite: 'Images/turrets/turret-3-3.png',
                     radius: spec.radius,
                     damage: spec.damage,
-                    level: spec.level
+                    level: spec.level,
+                    sellValue: spec.sellValue
                 });
             }
             that.displayStats();
@@ -410,6 +456,8 @@ MyGame.objects = (function (graphics, shortestPath) {
         let that = {},
             selectedTower;
         spec.towers = [];
+
+        let selectedPosition = {};
 
         that.towerExistsAtPosition = (gridPosition) => {
             for (const tower of spec.towers) {
@@ -460,7 +508,11 @@ MyGame.objects = (function (graphics, shortestPath) {
                     gridPosition: gridPosition
                 });
             }
-            spec.towers.push(tower);
+            if (spec.money >= tower.getCost()) {
+                spec.towers.push(tower);
+                spec.money -= tower.getCost();
+            }
+            document.getElementById('tower-specs').classList.toggle('hide', true);
         };
 
         that.setSelected = (gridPosition) => {
@@ -468,6 +520,7 @@ MyGame.objects = (function (graphics, shortestPath) {
             for (const tower of spec.towers) {
                 if (tower.positionSame(gridPosition)) {
                     tower.setSelected(true);
+                    selectedPosition = gridPosition;
                     tower.displayStats();
                     selectedTower = tower;
                     if (!(tower.upgradable())) {
@@ -485,7 +538,7 @@ MyGame.objects = (function (graphics, shortestPath) {
                 tower.setSelected(false);
             }
             selectedTower = {};
-            document.getElementById('tower-specs').classList.toggle('hide');
+            document.getElementById('tower-specs').classList.toggle('hide', true);
         };
 
         that.showWeaponCoverage = (bool) => {
@@ -506,6 +559,7 @@ MyGame.objects = (function (graphics, shortestPath) {
                     tower.render();
                 }
             }
+            graphics.renderMoney(spec.money);
         };
 
         that.reset = () => {
@@ -513,8 +567,21 @@ MyGame.objects = (function (graphics, shortestPath) {
         };
 
         that.upgradeSelected = () => {
-            if (Object.keys(selectedTower).length !== 0) {
+            if (Object.keys(selectedTower).length !== 0 && selectedTower.upgradable() && spec.money >= selectedTower.getCost()) {
+                spec.money -= selectedTower.getCost();
                 selectedTower.upgradeTower();
+            }
+        };
+
+        that.sellSelected = (params) => {
+            spec.money += selectedTower.getSellVal();
+            for (let i = 0; i < spec.towers.length; i++) {
+                if (spec.towers[i].positionSame(selectedPosition)) {
+                    selectedTower.animateSell();
+                    spec.towers.splice(i,1);
+                    that.deselectAll();
+                    return;
+                }
             }
         };
 
@@ -981,6 +1048,10 @@ MyGame.objects = (function (graphics, shortestPath) {
     return {
         Tower: Tower,
         TowerGroup: TowerGroup,
+        GroundProjectileTower: GroundProjectileTower,
+        GroundBombTower: GroundBombTower,
+        AirMissileTower: AirMissileTower,
+        AirProjectileTower: AirProjectileTower,
         CreepManager: CreepManager,
     };
 

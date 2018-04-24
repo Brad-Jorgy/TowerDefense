@@ -19,13 +19,11 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         lastTimeStamp,
         gamePhase = '',
         showGrid = false,
-        money = 0,
         life = 0,
         currentUpdateAndRenderList = [],
         levelStaticRenderElements = [
             () => { graphics.drawBackground(backGround); },
             () => { graphics.renderWalls(); },
-            () => { graphics.updateMoney(); },
             () => { graphics.updateLife(); },
             () => { graphics.updateLife(); },
         ],
@@ -56,7 +54,8 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         level = 'none',
         placeTowers = false,
         currentTowerType = '',
-        myCreepManager;
+        myCreepManager,
+        towerToPlace;
     const canvas = document.getElementById('canvas-main');
 
     function releaseCreeps() {
@@ -91,6 +90,13 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             nextTarget: { x: 1, y: 5 },
             towerGroup: towerGroup,
         });
+    }
+
+    function clearActiveTowers() {
+        let activeTowerButtons = document.getElementsByClassName('tower-active');
+        for (const active of activeTowerButtons) {
+            active.classList.remove('tower-active');
+        }
     }
 
     function startLevel(time, keyIn){
@@ -131,7 +137,8 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
     }
 
     function sellTower() {
-
+        towerGroup.sellSelected();
+        clearActiveTowers();
     }
 
 
@@ -200,7 +207,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         console.log('Tower game initializing...');
 
         gameInfo = {};
-        money = 50;
         life = 10;
         backGround.src = backgroundImage;
         backGround.addEventListener('load', backgroundLoaded, false);
@@ -251,44 +257,63 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         let towerButton1 = document.getElementById('tower1');
         towerButton1.addEventListener('click', ()=> {
             placeTowers = true;
+            clearActiveTowers();
             currentTowerType = 'tower1';
             towerButton1.classList.toggle('tower-active');
+            towerToPlace = gameObjects.GroundProjectileTower({gridPosition:{x:0, y:0}});
+            towerToPlace.displayStats(false);
         });
         
         let towerButton2 = document.getElementById('tower2');
         towerButton2.addEventListener('click', ()=> {
             placeTowers = true;
+            clearActiveTowers();
             currentTowerType = 'tower2';
             towerButton2.classList.toggle('tower-active');
+            towerToPlace = gameObjects.GroundBombTower({gridPosition:{x:0, y:0}});
+            towerToPlace.displayStats(false);
         });
         
         let towerButton3 = document.getElementById('tower3');
         towerButton3.addEventListener('click', ()=> {
             placeTowers = true;
+            clearActiveTowers();
             currentTowerType = 'tower3';
             towerButton3.classList.toggle('tower-active');
+            towerToPlace = gameObjects.AirProjectileTower({gridPosition:{x:0, y:0}});
+            towerToPlace.displayStats(false);
         });
         
         let towerButton4 = document.getElementById('tower4');
         towerButton4.addEventListener('click', ()=> {
             placeTowers = true;
+            clearActiveTowers();
             currentTowerType = 'tower4';
             towerButton4.classList.toggle('tower-active');
+            towerToPlace = gameObjects.AirMissileTower({gridPosition:{x:0, y:0}});
+            towerToPlace.displayStats(false);
         });
 
         document.getElementById('spec-upgrade-tower').addEventListener('click', () => {
             towerGroup.upgradeSelected();
         });
 
+        document.getElementById('spec-sell-tower').addEventListener('click', () => {
+            sellTower();
+        });
+
         document.getElementById('spec-cancel').addEventListener('click', () => {
             towerGroup.deselectAll();
+            clearActiveTowers();
             let activeTowerButtons = document.getElementsByClassName('tower-active');
             for (const active of activeTowerButtons) {
                 active.classList.remove('tower-active');
             }
         });
         
-        towerGroup = gameObjects.TowerGroup({});
+        towerGroup = gameObjects.TowerGroup({
+            money: 50
+        });
         myCreepManager = gameObjects.CreepManager({});
 
         localStorage['upGradeTowerKey'] = upgradeTowerKey;
