@@ -406,7 +406,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
                     placeTowers = false;
                     currentTowerType = '';
                 }
-                
+
             }
         });
 
