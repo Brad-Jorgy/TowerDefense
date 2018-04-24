@@ -1,4 +1,4 @@
-MyGame.objects = (function (graphics) {
+MyGame.objects = (function (graphics, shortestPath) {
 
     //------------------------------------------------------------------
     //
@@ -287,7 +287,30 @@ MyGame.objects = (function (graphics) {
             }
             return false;
         };
-
+        
+        that.getTowerGrid = (startx, starty, endx, endy) => {
+            let grid = [];
+            for (let x = 0; x < 15; x++) {
+                grid[x] = [];
+                for (let y = 0; y < 15; y++) {
+                    grid[x][y] = 'Empty';
+                    if (that.towerExistsAtPosition({ x: x, y: y })) {
+                        grid[x][y] = 'tower';
+                    } else if (x === 0 && y < 5 || x < 5 && y === 0) {
+                        grid[x][y] = 'wall';
+                    } else if (x > 8 && y === 0 || x === 14 && y < 5) {
+                        grid[x][y] = 'wall';
+                    } else if (x === 0 && y > 8 || x < 5 && y === 14) {
+                        grid[x][y] = 'wall';
+                    } else if (x > 8 && y === 14 || x === 14 && y > 8) {
+                        grid[x][y] = 'wall';
+                    }
+                }
+            }
+            grid[startx][starty] = 'Start';
+            grid[endx][endy] = 'Exit';
+            return grid;
+        }
         that.addTower = (towerType, gridPosition) => {
             let tower;
             if (towerType === 'tower1') {
@@ -326,6 +349,10 @@ MyGame.objects = (function (graphics) {
             }
         };
 
+        that.reset = () => {
+            spec.towers = [];
+        };
+
         return that;
     }
 
@@ -355,6 +382,10 @@ MyGame.objects = (function (graphics) {
             spec.rotation -= spec.rotateRate * (elapsedTime);
         };
 
+        that.hardSetRotation = function(newValue) {
+            spec.rotation = newValue;
+        };
+
         //------------------------------------------------------------------
         //
         // Move in the direction the sprite is facing
@@ -370,6 +401,34 @@ MyGame.objects = (function (graphics) {
             spec.center.x += (vectorX * spec.moveRate * elapsedTime);
             spec.center.y += (vectorY * spec.moveRate * elapsedTime);
         };
+
+        that.moveUp = function (elapsedTime) {
+            var vectorX = 0, vectorY = -1;
+
+            spec.center.x += (vectorX * spec.moveRate * elapsedTime);
+            spec.center.y += (vectorY * spec.moveRate * elapsedTime);
+        };
+
+        that.moveDown = function (elapsedTime) {
+            var vectorX = 0, vectorY = 1;
+            spec.center.x += (vectorX * spec.moveRate * elapsedTime);
+            spec.center.y += (vectorY * spec.moveRate * elapsedTime);
+        };
+
+        that.moveLeft = function(elapsedTime) {
+            var vectorX = -1, vectorY = 0;
+
+            spec.center.x += (vectorX * spec.moveRate * elapsedTime);
+            spec.center.y += (vectorY * spec.moveRate * elapsedTime);
+        };
+
+        that.moveRight = function(elapsedTime) {
+            var vectorX = 1, vectorY = 0;
+
+            spec.center.x += (vectorX * spec.moveRate * elapsedTime);
+            spec.center.y += (vectorY * spec.moveRate * elapsedTime);
+        };
+
 
         //------------------------------------------------------------------
         //
@@ -477,9 +536,81 @@ MyGame.objects = (function (graphics) {
             update: that.update
         };
 
+        spec.shortPath = shortestPath.shortestPath(spec.gridPosition.x, spec.gridPosition.y, spec.targetGridPosition.x, spec.targetGridPosition.y, spec.towerGroup);
+        spec.direction = spec.shortPath.shift();
+        if (spec.direction === 'up' || spec.direction === 'down') {
+            spec.nextTarget.y = spec.direction === 'up' ? spec.center.y-graphics.cellWidth : spec.center.y-graphics.cellWidth;
+            spec.nextTarget.x = spec.center.x;
+        } else {
+            spec.nextTarget.x = spec.direction === 'right' ? spec.center.x + graphics.cellWidth : spec.center.x - graphics.cellWidth;
+            spec.nextTarget.y = spec.center.y;
+        }
         that.update = (elapsedTime) => {
             if (elapsedTime){
-                that.moveForward(elapsedTime);
+                if(spec.direction === 'up' && spec.center.y <spec.nextTarget.y) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'up') {
+                        if (spec.direction === 'right') {
+                            spec.nextTarget.x = spec.center.x + graphics.cellWidth;
+                            that.moveRight(elapsedTime);
+                        } else if (direction === 'left') {
+                            spec.nextTarget.x = spec.center.x - graphics.cellWidth;
+                            that.moveLeft(elapsedTime);
+                        }
+                    } else {
+                      spec.nextTarget.y = spec.center.y - graphics.cellWidth;
+                    }
+                } else if (spec.direction === 'down' &&spec.center.y > spec.nextTarget.y) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'down') {
+                        if (spec.direction === 'right') {
+                            spec.nextTarget.x = spec.center.x + graphics.cellWidth;
+                            that.moveRight(elapsedTime);
+                        } else if (direction === 'left') {
+                            spec.nextTarget.x = spec.center.x - graphics.cellWidth;
+                            that.moveLeft(elapsedTime);
+                        }
+                    } else {
+                      spec.nextTarget.y = spec.center.y + graphics.cellWidth;
+                    }
+                } else if (spec.direction === 'left' && spec.center.x < spec.nextTarget.x) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'left') {
+                        if (spec.direction === 'down') {
+                            spec.nextTarget.y = spec.center.y + graphics.cellWidth;
+                            that.moveDown(elapsedTime);
+                        } else if (spec.direction === 'up') {
+                            spec.nextTarget.y = spec.center.y - graphics.cellWidth;
+                            that.moveUp(elapsedTime);
+                        }
+                    } else {
+                      spec.nextTarget.x = spec.center.x - graphics.cellWidth;
+                    }
+                } else if (spec.direction === 'right' && spec.center.x > spec.nextTarget.x) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'right') {
+                        if (spec.direction === 'down') {
+                            spec.nextTarget.y = spec.center.y + graphics.cellWidth;
+                            that.moveDown(elapsedTime);
+                        } else if (spec.direction === 'up') {
+                            spec.nextTarget.y = spec.center.y - graphics.cellWidth;
+                            that.moveUp(elapsedTime);
+                        }
+                    } else {
+                      spec.nextTarget.x = spec.center.x + graphics.cellWidth;
+                    }
+                }
+                else {
+                    if (spec.direction === 'up') {
+                        that.moveUp(elapsedTime);
+                    } else if (spec.direction === 'down') {
+                        that.moveDown(elapsedTime);
+                    } else if (spec.direction === 'right') {
+                        that.moveRight(elapsedTime);
+                    } else if (spec.direction === 'left') {
+                        that.moveLeft(elapsedTime);
+                    }
+                }
             }
             base.update(elapsedTime);
         };
@@ -509,9 +640,81 @@ MyGame.objects = (function (graphics) {
             update: that.update
         };
 
+        spec.shortPath = shortestPath.shortestPath(spec.gridPosition.x, spec.gridPosition.y, spec.targetGridPosition.x, spec.targetGridPosition.y, spec.towerGroup);
+        spec.direction = spec.shortPath.shift();
+        if (spec.direction === 'up' || spec.direction === 'down') {
+            spec.nextTarget.y = spec.direction === 'up' ? spec.center.y-graphics.cellWidth : spec.center.y-graphics.cellWidth;
+            spec.nextTarget.x = spec.center.x;
+        } else {
+            spec.nextTarget.x = spec.direction === 'right' ? spec.center.x + graphics.cellWidth : spec.center.x - graphics.cellWidth;
+            spec.nextTarget.y = spec.center.y;
+        }
         that.update = (elapsedTime) => {
             if (elapsedTime) {
-                that.moveForward(elapsedTime);
+                if(spec.direction === 'up' && spec.center.y <spec.nextTarget.y) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'up') {
+                        if (spec.direction === 'right') {
+                            spec.nextTarget.x = spec.center.x + graphics.cellWidth;
+                            that.moveRight(elapsedTime);
+                        } else if (direction === 'left') {
+                            spec.nextTarget.x = spec.center.x - graphics.cellWidth;
+                            that.moveLeft(elapsedTime);
+                        }
+                    } else {
+                        spec.nextTarget.y = spec.center.y - graphics.cellWidth;
+                    }
+                } else if (spec.direction === 'down' &&spec.center.y > spec.nextTarget.y) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'down') {
+                        if (spec.direction === 'right') {
+                            spec.nextTarget.x = spec.center.x + graphics.cellWidth;
+                            that.moveRight(elapsedTime);
+                        } else if (direction === 'left') {
+                            spec.nextTarget.x = spec.center.x - graphics.cellWidth;
+                            that.moveLeft(elapsedTime);
+                        }
+                    } else {
+                        spec.nextTarget.y = spec.center.y + graphics.cellWidth;
+                    }
+                } else if (spec.direction === 'left' && spec.center.x < spec.nextTarget.x) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'left') {
+                        if (spec.direction === 'down') {
+                            spec.nextTarget.y = spec.center.y + graphics.cellWidth;
+                            that.moveDown(elapsedTime);
+                        } else if (spec.direction === 'up') {
+                            spec.nextTarget.y = spec.center.y - graphics.cellWidth;
+                            that.moveUp(elapsedTime);
+                        }
+                    } else {
+                        spec.nextTarget.x = spec.center.x - graphics.cellWidth;
+                    }
+                } else if (spec.direction === 'right' && spec.center.x > spec.nextTarget.x) {
+                    spec.direction = spec.shortPath.shift();
+                    if (spec.direction !== 'right') {
+                        if (spec.direction === 'down') {
+                            spec.nextTarget.y = spec.center.y + graphics.cellWidth;
+                            that.moveDown(elapsedTime);
+                        } else if (spec.direction === 'up') {
+                            spec.nextTarget.y = spec.center.y - graphics.cellWidth;
+                            that.moveUp(elapsedTime);
+                        }
+                    } else {
+                        spec.nextTarget.x = spec.center.x + graphics.cellWidth;
+                    }
+                }
+                else {
+                    if (spec.direction === 'up') {
+                        that.moveUp(elapsedTime);
+                    } else if (spec.direction === 'down') {
+                        that.moveDown(elapsedTime);
+                    } else if (spec.direction === 'right') {
+                        that.moveRight(elapsedTime);
+                    } else if (spec.direction === 'left') {
+                        that.moveLeft(elapsedTime);
+                    }
+                }
             }
             base.update(elapsedTime);
         };
@@ -560,6 +763,15 @@ MyGame.objects = (function (graphics) {
 
         spec.creeps = [];
 
+        that.initCreeps = (towerGroup) => {
+            spec.creeps.forEach((creep) => {
+              creep.shortPath = shortestPath.shortestPath(spec.gridPosition.x, spec.gridPosition.y, spec.targetGridPosition.x, spec.targetGridPosition.y, towerGroup);
+              creep.direction = shortPath.shift();
+              creep.nextTarget.y = (spec.direction === 'up' ? creep.gridPosition.y-1 : creep.gridPosition.y+1) * graphics.cellWidth + graphics.cellWidth / 2;
+              creep.nextTarget.x = (spec.direction === 'right' ? creep.gridPosition.x+1 : spec.gridPosition.x-1) * graphics.cellWidth + graphics.cellWidth / 2;
+            });
+        };
+
         that.addCreep = (creepType, creepSpecs) => {
             let creep;
             if (creepType === 'creep1') {
@@ -594,6 +806,10 @@ MyGame.objects = (function (graphics) {
             }
         };
 
+        that.reset = () => {
+            spec.creeps = [];
+        }
+
         return that;
     }
 
@@ -603,4 +819,4 @@ MyGame.objects = (function (graphics) {
         CreepManager: CreepManager,
     };
 
-}(MyGame.towerGraphics));
+}(MyGame.towerGraphics, MyGame.shortestPath));
