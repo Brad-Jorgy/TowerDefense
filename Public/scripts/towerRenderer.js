@@ -13,18 +13,11 @@ MyGame.towerGraphics = (function(effects) {
         currentRunningList = currentList;
     }
 
-    function updateScore() {
+    function updateScore(score) {
         ctx.font = "20px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         ctx.fillText("SCORE: " + score, 510, 590);
-
-        if (creep === death) {
-        score += 10;
-        creep = creep - 1;
-        money += 10;
-        }
-
     }
 
     function updateDeadCreeps() {
@@ -54,11 +47,11 @@ MyGame.towerGraphics = (function(effects) {
         ctx.fillText(text, 60, 630);
     }
 
-    function updateMoney() {
+    function renderMoney(money) {
         ctx.font = "20px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
-        ctx.fillText("$Money: ", 270, 630);
+        ctx.fillText(`$Money: ${money}`, 270, 630);
     }
 
     function updateLife() {
@@ -381,7 +374,7 @@ MyGame.towerGraphics = (function(effects) {
         drawBackground: drawBackground,
         drawGrid: drawGrid,
         textLevel: textLevel,
-        updateMoney: updateMoney,
+        renderMoney: renderMoney,
         updateLife: updateLife,
         renderWalls: renderWalls,
         drawGameOver: drawGameOver,
