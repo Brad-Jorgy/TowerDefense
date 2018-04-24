@@ -122,11 +122,12 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
     }
 
     function upgradeTower(){
-        graphics.smoke(500,500);
-        graphics.explosion(500,500);
-        graphics.dies(500, 500);
-        graphics.sold(100, 100);
-        graphics.smoke(100, 100);
+        // graphics.smoke(500,500);
+        // graphics.explosion(500,500);
+        // graphics.dies(500, 500);
+        // graphics.sold(100, 100);
+        // graphics.smoke(100, 100);
+        towerGroup.upgradeSelected();
     }
 
     function sellTower() {
@@ -145,9 +146,9 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         let weaponCheck = document.querySelector('input[id="weapon"]');
         weaponCheck.onchange = function() {
             if(weaponCheck.checked) {
-                //add tower range render thing here.
+                towerGroup.showWeaponCoverage(true);
             }else if(weaponCheck.checked === false){
-                // does not clear when changed back.
+                towerGroup.showWeaponCoverage(false);
             }
         }
 
@@ -247,28 +248,47 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
                 //resetCreeps
             });
         
-        document.getElementById('tower1').addEventListener('click', ()=> {
+        let towerButton1 = document.getElementById('tower1');
+        towerButton1.addEventListener('click', ()=> {
             placeTowers = true;
             currentTowerType = 'tower1';
+            towerButton1.classList.toggle('tower-active');
         });
         
-        document.getElementById('tower2').addEventListener('click', ()=> {
+        let towerButton2 = document.getElementById('tower2');
+        towerButton2.addEventListener('click', ()=> {
             placeTowers = true;
             currentTowerType = 'tower2';
+            towerButton2.classList.toggle('tower-active');
         });
         
-        document.getElementById('tower3').addEventListener('click', ()=> {
+        let towerButton3 = document.getElementById('tower3');
+        towerButton3.addEventListener('click', ()=> {
             placeTowers = true;
             currentTowerType = 'tower3';
+            towerButton3.classList.toggle('tower-active');
         });
         
-        document.getElementById('tower4').addEventListener('click', ()=> {
+        let towerButton4 = document.getElementById('tower4');
+        towerButton4.addEventListener('click', ()=> {
             placeTowers = true;
             currentTowerType = 'tower4';
+            towerButton4.classList.toggle('tower-active');
+        });
+
+        document.getElementById('spec-upgrade-tower').addEventListener('click', () => {
+            towerGroup.upgradeSelected();
+        });
+
+        document.getElementById('spec-cancel').addEventListener('click', () => {
+            towerGroup.deselectAll();
+            let activeTowerButtons = document.getElementsByClassName('tower-active');
+            for (const active of activeTowerButtons) {
+                active.classList.remove('tower-active');
+            }
         });
         
         towerGroup = gameObjects.TowerGroup({});
-
         myCreepManager = gameObjects.CreepManager({});
 
         localStorage['upGradeTowerKey'] = upgradeTowerKey;
@@ -285,7 +305,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             game.showScreen('main-menu');
         });
 
-        // Create an ability to move the logo using the mouse
+       // Create an ability to move the logo using the mouse
         // myMouse = input.Mouse();
         // myMouse.registerCommand('mousedown', function(e) {
         //   mouseCapture = true;
@@ -397,19 +417,31 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
         gamePhase = 'play-game';
 
-        // Testing turret rotation
+         // Testing turret rotation
         myMouse.registerCommand('mousedown', function (e, elapsedTime) {
-            if (placeTowers && e.target == canvas) {
+            if (e.target == canvas) {
                 let gridPosition = {
                     x: alignToGameGrid(e.offsetX),
                     y: alignToGameGrid(e.offsetY)
                 };
-                if (!towerGroup.towerExistsAtPosition(gridPosition)) {
-                    towerGroup.addTower(currentTowerType, gridPosition);
-                    placeTowers = false;
-                    currentTowerType = '';
-                }
+                if (placeTowers) {
+                    if (!towerGroup.towerExistsAtPosition(gridPosition)) {
+                        towerGroup.addTower(currentTowerType, gridPosition);
+                        placeTowers = false;
+                        currentTowerType = '';
+                    }
 
+                    let activeTowerButtons = document.getElementsByClassName('tower-active');
+                    for (const active of activeTowerButtons) {
+                        active.classList.remove('tower-active');
+                    }
+                } else {
+                    if (towerGroup.towerExistsAtPosition(gridPosition)) {
+                        towerGroup.setSelected(gridPosition);
+                    } else {
+                        towerGroup.deselectAll();
+                    }
+                }
             }
         });
 

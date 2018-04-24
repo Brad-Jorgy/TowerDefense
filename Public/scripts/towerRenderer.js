@@ -256,13 +256,15 @@ MyGame.towerGraphics = (function(effects) {
 
         //
         // The other side of that hack job
-        that.drawArc = function (angle) {
+        that.drawArc = function (radius) {
             ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
             ctx.beginPath();
-            ctx.moveTo(spec.center.x, spec.center.y);
-            ctx.arc(spec.center.x, spec.center.y, 100, spec.rotation - angle / 2, spec.rotation + angle / 2);
-            ctx.lineTo(spec.center.x, spec.center.y);
+            ctx.arc(spec.center.x, spec.center.y, radius*squares, 0, 2 * Math.PI);
             ctx.fill();
+        };
+
+        that.updateImage = (sprite) => {
+            image.src = sprite;
         };
 
         return that;
@@ -360,6 +362,15 @@ MyGame.towerGraphics = (function(effects) {
         return that;
     }
 
+    function drawGridSquare(position, color) {
+        ctx.fillStyle = color;
+        let xStart = position.x * squares;
+        let xEnd = squares;
+        let yStart = position.y * squares;
+        let yEnd = squares;
+        ctx.fillRect(xStart + 1, yStart + 1, xEnd - 2, yEnd - 2);
+    }
+
     return {
 
         clear: clear,
@@ -383,6 +394,7 @@ MyGame.towerGraphics = (function(effects) {
         sold: sold,
         gridWidth: gridWidth,
         cellWidth: squares,
+        drawGridSquare: drawGridSquare,
     };
 
 }(MyGame.effectSystem));

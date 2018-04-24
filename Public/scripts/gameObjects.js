@@ -1,4 +1,11 @@
 MyGame.objects = (function (graphics, shortestPath) {
+    let showWeaponCoverage = false,
+        specName = document.getElementById('tower-name'),
+        specTargetType = document.getElementById('target-type'),
+        specLevel = document.getElementById('tower-level'),
+        specRange = document.getElementById('range'),
+        specDamage = document.getElementById('damage'),
+        specFireRate = document.getElementById('fire-rate');
 
     //------------------------------------------------------------------
     //
@@ -70,6 +77,7 @@ MyGame.objects = (function (graphics, shortestPath) {
     //
     //------------------------------------------------------------------
     function Tower(spec) {
+        spec.selected = false;
         spec.center = {
             x: spec.gridPosition.x * graphics.cellWidth + graphics.cellWidth/2,
             y: spec.gridPosition.y * graphics.cellWidth + graphics.cellWidth/2
@@ -120,9 +128,35 @@ MyGame.objects = (function (graphics, shortestPath) {
         that.render = function () {
             baseSprite.draw();
             weaponSprite.draw();
-            //
-            // A little hack job to show something interesting.
-            weaponSprite.drawArc(.4);
+
+            if (spec.selected || showWeaponCoverage) {
+                weaponSprite.drawArc(spec.radius);
+            }
+            if (spec.selected) {
+                graphics.drawGridSquare(spec.gridPosition, 'rgba(0,255,0,0.5)');
+            }
+        };
+
+        that.displayStats = () => {
+            specName.innerHTML = spec.towerName;
+            specTargetType.innerHTML = spec.creepType;
+            specLevel.innerHTML = spec.level;
+            specRange.innerHTML = spec.radius;
+            specDamage.innerHTML = spec.damage;
+            specFireRate.innerHTML = spec.fireRate;
+            document.getElementById('tower-specs').classList.remove('hide');
+        };
+
+        that.upgradable = () => {
+            return (spec.level < 3 /*TODO: check if funds available to purchase tower*/);
+        };
+
+        that.upgradeTower = (upgradeData) => {
+            weaponSprite.updateImage(upgradeData.weaponSprite);
+            spec.radius = upgradeData.radius;
+            spec.damage = upgradeData.damage;
+            spec.level = upgradeData.level;
+            // TODO: remove money from available money
         };
 
         //------------------------------------------------------------------
@@ -137,6 +171,10 @@ MyGame.objects = (function (graphics, shortestPath) {
             };
         };
 
+        that.setSelected = (bool) => {
+            spec.selected = bool;
+        };
+
         that.positionSame = (gridPosition) => {
             return (gridPosition.x == spec.gridPosition.x && gridPosition.y == spec.gridPosition.y);
         };
@@ -145,140 +183,232 @@ MyGame.objects = (function (graphics, shortestPath) {
     }
 
     function GroundBombTower(spec) {
-        let level = 1;
+        let stats = {
+            towerName: 'Bomb Tower',
+            radius: 2, // in CellWidths
+            damage: 20,
+            fireRate: 1000/4, // time between shots (ms) (subject to change)
+            creepType: 'ground',
+            cost: 20,
+            level: 1
+        };
+        Object.assign(spec, stats);
+
         let that = Tower(Object.assign({
             baseSprite: 'Images/turrets/turret-base.gif',
             weaponSprite: 'Images/turrets/turret-2-1.png',
             gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
             rotateRate: 6 * 3.14159 / 1000
         },spec));
-        // Add stats to spec
-        
+
         let base = {
-            update: that.update
+            update: that.update,
+            upgradeTower: that.upgradeTower
         };
-        
+
         that.update = (elapsedTime) => {
             base.update(elapsedTime);
         };
 
         that.upgradeTower = () => {
-            if (level == 1) {
-                spec.weaponSprite = 'Images/turrets/turret-2-2.png';
-                level = 2;
-                //change stats
-            } else if (level == 2) {
-                spec.weaponSprite = 'Images/turrets/turret-2-3.png';
-                level = 3;
-                //change stats
+            if (spec.level == 1) {
+                spec.level = 2;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-2-2.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
+            } else if (spec.level == 2) {
+                spec.level = 3;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-2-3.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
             }
+            that.displayStats();
         };
 
         return that;
     }
 
     function GroundProjectileTower(spec) {
-        let level = 1;
+        let stats = {
+            towerName: 'Basic Tower',
+            radius: 2.5, // in CellWidths
+            damage: 10,
+            fireRate: 1000/10, // time between shots (ms) (subject to change)
+            creepType: 'ground',
+            cost: 10,
+            level: 1
+        };
+        Object.assign(spec, stats);
+
         let that = Tower(Object.assign({
             baseSprite: 'Images/turrets/turret-base.gif',
             weaponSprite: 'Images/turrets/turret-1-1.png',
             gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
             rotateRate: 6 * 3.14159 / 1000
         },spec));
-        // Add stats to spec
-        
+
         let base = {
-            update: that.update
+            update: that.update,
+            upgradeTower: that.upgradeTower
         };
-        
+
         that.update = (elapsedTime) => {
             base.update(elapsedTime);
         };
 
         that.upgradeTower = () => {
-            if (level == 1) {
-                spec.weaponSprite = 'Images/turrets/turret-1-2.png';
-                level = 2;
-                //change stats
-            } else if (level == 2) {
-                spec.weaponSprite = 'Images/turrets/turret-1-3.png';
-                level = 3;
-                //change stats
+            if (spec.level == 1) {
+                spec.level = 2;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-1-2.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
+            } else if (spec.level == 2) {
+                spec.level = 3;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-1-3.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
             }
+            that.displayStats();
         };
 
         return that;
     }
 
     function AirMissileTower(spec) {
-        let level = 1;
+        let stats = {
+            towerName: 'AA Tower',
+            radius: 2.5, // in CellWidths
+            damage: 10,
+            fireRate: 1000 / 4, // time between shots (ms) (subject to change)
+            creepType: 'air',
+            cost: 10,
+            level: 1
+        };
+        Object.assign(spec, stats);
+
         let that = Tower(Object.assign({
             baseSprite: 'Images/turrets/turret-base.gif',
             weaponSprite: 'Images/turrets/turret-4-1.png',
             gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
             rotateRate: 6 * 3.14159 / 1000
         },spec));
-        // Add stats to spec
-        
+
         let base = {
-            update: that.update
+            update: that.update,
+            upgradeTower: that.upgradeTower
         };
-        
+
         that.update = (elapsedTime) => {
             base.update(elapsedTime);
         };
 
         that.upgradeTower = () => {
-            if (level == 1) {
-                spec.weaponSprite = 'Images/turrets/turret-4-2.png';
-                level = 2;
-                //change stats
-            } else if (level == 2) {
-                spec.weaponSprite = 'Images/turrets/turret-4-3.png';
-                level = 3;
-                //change stats
+            if (spec.level == 1) {
+                spec.level = 2;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-4-2.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
+            } else if (spec.level == 2) {
+                spec.level = 3;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-4-3.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
             }
+            that.displayStats();
         };
 
         return that;
     }
 
     function AirProjectileTower(spec) {
-        let level = 1;
+        let stats = {
+            towerName: 'AA Guided Missile',
+            radius: 2.5, // in CellWidths
+            damage: 10,
+            fireRate: 1000 / 4, // time between shots (ms) (subject to change)
+            creepType: 'air',
+            cost: 10,
+            level: 1
+        };
+        Object.assign(spec, stats);
+
         let that = Tower(Object.assign({
             baseSprite: 'Images/turrets/turret-base.gif',
             weaponSprite: 'Images/turrets/turret-3-1.png',
             gridPosition: { x: spec.gridPosition.x, y: spec.gridPosition.y },
             rotateRate: 6 * 3.14159 / 1000
         },spec));
-        // Add stats to spec
-        
+
         let base = {
-            update: that.update
+            update: that.update,
+            upgradeTower: that.upgradeTower
         };
-        
+
         that.update = (elapsedTime) => {
             base.update(elapsedTime);
         };
 
         that.upgradeTower = () => {
-            if (level == 1) {
-                spec.weaponSprite = 'Images/turrets/turret-3-2.png';
-                level = 2;
-                //change stats
-            } else if (level == 2) {
-                spec.weaponSprite = 'Images/turrets/turret-3-3.png';
-                level = 3;
-                //change stats
+            if (spec.level == 1) {
+                spec.level = 2;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-3-2.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
+            } else if (spec.level == 2) {
+                spec.level = 3;
+                spec.damage += 10;
+                spec.radius += 1;
+                base.upgradeTower({
+                    weaponSprite: 'Images/turrets/turret-3-3.png',
+                    radius: spec.radius,
+                    damage: spec.damage,
+                    level: spec.level
+                });
             }
+            that.displayStats();
         };
 
         return that;
     }
 
     function TowerGroup(spec) {
-        let that = {
-        };
+        let that = {},
+            selectedTower;
         spec.towers = [];
 
         that.towerExistsAtPosition = (gridPosition) => {
@@ -333,6 +463,35 @@ MyGame.objects = (function (graphics, shortestPath) {
             spec.towers.push(tower);
         };
 
+        that.setSelected = (gridPosition) => {
+            that.deselectAll();
+            for (const tower of spec.towers) {
+                if (tower.positionSame(gridPosition)) {
+                    tower.setSelected(true);
+                    tower.displayStats();
+                    selectedTower = tower;
+                    if (!(tower.upgradable())) {
+                        document.getElementById('spec-upgrade-tower').disabled = true;
+                    } else {
+                        document.getElementById('spec-upgrade-tower').disabled = false;
+                    }
+                    return;
+                }
+            }
+        };
+
+        that.deselectAll = () => {
+            for (const tower of spec.towers) {
+                tower.setSelected(false);
+            }
+            selectedTower = {};
+            document.getElementById('tower-specs').classList.toggle('hide');
+        };
+
+        that.showWeaponCoverage = (bool) => {
+            showWeaponCoverage = bool;
+        };
+
         that.update = (elapsedTime) => {
             for (const tower of spec.towers) {
                 if (tower) {
@@ -351,6 +510,12 @@ MyGame.objects = (function (graphics, shortestPath) {
 
         that.reset = () => {
             spec.towers = [];
+        };
+
+        that.upgradeSelected = () => {
+            if (Object.keys(selectedTower).length !== 0) {
+                selectedTower.upgradeTower();
+            }
         };
 
         return that;
