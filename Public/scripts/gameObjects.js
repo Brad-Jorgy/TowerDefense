@@ -287,7 +287,30 @@ MyGame.objects = (function (graphics, shortestPath) {
             }
             return false;
         };
-
+        
+        that.getTowerGrid = (startx, starty, endx, endy) => {
+            let grid = [];
+            for (let x = 0; x < 15; x++) {
+                grid[x] = [];
+                for (let y = 0; y < 15; y++) {
+                    grid[x][y] = 'Empty';
+                    if (that.towerExistsAtPosition({ x: x, y: y })) {
+                        grid[x][y] = 'tower';
+                    } else if (x === 0 && y < 5 || x < 5 && y === 0) {
+                        grid[x][y] = 'wall';
+                    } else if (x > 8 && y === 0 || x === 14 && y < 5) {
+                        grid[x][y] = 'wall';
+                    } else if (x === 0 && y > 8 || x < 5 && y === 14) {
+                        grid[x][y] = 'wall';
+                    } else if (x > 8 && y === 14 || x === 14 && y > 8) {
+                        grid[x][y] = 'wall';
+                    }
+                }
+            }
+            grid[startx][starty] = 'Start';
+            grid[endx][endy] = 'Exit';
+            return grid;
+        }
         that.addTower = (towerType, gridPosition) => {
             let tower;
             if (towerType === 'tower1') {
