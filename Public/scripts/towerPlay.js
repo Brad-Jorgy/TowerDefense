@@ -53,7 +53,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
         ],
         towerGroup,
-        level = 'none',
+        level = 'levelOne',
         placeTowers = false,
         currentTowerType = '',
         myCreepManager;
@@ -93,26 +93,124 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         });
     }
 
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    }
+
+    function randomCreep(level) {
+        console.log('random creep created');
+        let vertRandom = getRandomInt(5,9);
+        let creepNum = getRandomInt(1,3);
+        let horzRandom = getRandomInt(5,9);
+        let ranCreep = 'creep1';
+        if (level === 'levelOne') {
+            let creepNum = getRandomInt(1,3);
+            if (creepNum >= 2) {
+                ranCreep = 'creep2';
+            }
+            console.log(ranCreep);
+            myCreepManager.addCreep(ranCreep, {
+                gridPosition: { x: 0, y: vertRandom },
+                targetGridPosition: { x: 14, y: 7},
+                rotation: 0,
+                shortestPath: [],
+                direction: 'right',
+                nextTarget: { x: 1, y: 5 },
+                towerGroup: towerGroup,
+            });
+        } else if (level === 'levelTwo') {
+            let topEntry = getRandomInt(0,1);
+            let creepNum = getRandomInt(1,3);
+            if (creepNum >= 2) {
+                ranCreep = 'creep2';
+            }
+            let target = { x: 14, y: 7};
+            let start = { x: 0, y: vertRandom};
+            let direction = 'right';
+            if (topEntry === 0) {
+                start = {x: horzRandom, y: 0};
+                target = { x: 7, y: 14};
+                direction = 'down';
+            }
+            myCreepManager.addCreep(ranCreep, {
+                gridPosition: start,
+                targetGridPosition: target,
+                rotation: 0,
+                shortestPath: [],
+                direction: direction,
+                nextTarget: { x: 1, y: 5 },
+                towerGroup: towerGroup,
+            });
+        } else if (level === 'levelThree') {
+            let topEntry = getRandomInt(0,1);
+            let creepNum = getRandomInt(1,4);
+            let target = { x: 14, y: 7};
+            let direction = 'right';
+
+            if (creepNum === 2) {
+                ranCreep = 'creep2';
+            } else if(creepNum >= 3) {
+                ranCreep = 'FlyingCreep';
+            }
+
+            if (topEntry === 1) {
+                target = { x: 7, y: 14};
+                direction = 'down';
+            }
+
+            myCreepManager.addCreep(ranCreep, {
+                gridPosition: { x: 0, y: vertRandom },
+                targetGridPosition: target,
+                rotation: 0,
+                shortestPath: [],
+                direction: direction,
+                nextTarget: { x: 1, y: 5 },
+                towerGroup: towerGroup,
+            });
+        }
+    }
+
+    function releaseCreeps(){
+        events.add('Release Creeps', 250, 1, undefined, undefined, randomCreep, level);
+        events.add('Release Creeps', 1000, 1, undefined, undefined, randomCreep, level);
+        events.add('Release Creeps', 1750, 1, undefined, undefined, randomCreep, level);
+        events.add('Release Creeps', 2500, 1, undefined, undefined, randomCreep, level);
+        events.add('Release Creeps', 3250, 1, undefined, undefined, randomCreep, level);
+    }
+
+    function forceLevelTwo(time, keyIn){
+        level = 'levelTwo';
+        myKeyboard.keyProcessed(keyIn);
+    }
+
+    function forceLevelThree(time, keyIn){
+        level = 'levelThree';
+        myKeyboard.keyProcessed(keyIn);
+    }
+
     function startLevel(time, keyIn){
-        //if(gamePhase === 'levelOne'){
-            console.log("level started");
+        myKeyboard.keyProcessed(keyIn);
+        if(level === 'levelOne'){
+            console.log("level one started");
+            let numCreeps = 3;
             let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
             let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
             events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
-            myKeyboard.keyProcessed(keyIn);
-        // }else if(gamePhase === 'levelTwo'){
-        //     console.log("level started");
-        //     let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
-        //     let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
-        //     events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
-        //     myKeyboard.keyProcessed(keyIn);
-        // }else if(gamePhase === 'levelThree'){
-        //     console.log("level started");
-        //     let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
-        //     let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
-        //     events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
-        //     myKeyboard.keyProcessed(keyIn);
-        // }
+        } else if(level === 'levelTwo') {
+            console.log("level two started");
+            let numCreeps = 4;
+            let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
+            let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
+            events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
+        } else if(level === 'levelThree') {
+            console.log("level three started");
+            let numCreeps = 5;
+            let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
+            let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
+            events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
+        }
     }
 
     function gameOver(){
@@ -122,9 +220,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
     }
 
     function upgradeTower(){
-        // graphics.smoke(500,500);
-        // graphics.explosion(500,500);
-        // graphics.dies(500, 500);
+
         // graphics.sold(100, 100);
         // graphics.smoke(100, 100);
         towerGroup.upgradeSelected();
@@ -132,6 +228,12 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
     function sellTower() {
 
+    }
+
+    function particleShow(){
+        graphics.smoke(500,500);
+        graphics.explosion(500,500);
+        graphics.dies(500, 500);
     }
 
 
@@ -297,7 +399,10 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
         myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey'), upgradeTower);  //Need upgrade tower function
         myKeyboard.registerCommand(localStorage.getItem('sellTowerKey'), sellTower);              // Sell tower function needed
-        myKeyboard.registerCommand(localStorage.getItem('startLevelKey'), startLevel);       //Need to fix when setting buttons
+        myKeyboard.registerCommand(localStorage.getItem('startLevelKey'), startLevel);
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_Q, forceLevelTwo);  //sets to level two
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_W, forceLevelThree);  //sets to level three
+        myKeyboard.registerCommand(KeyEvent.DOM_VK_R, particleShow); //shows particle and effects
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
             cancelNextRequest = true;
@@ -305,22 +410,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             game.showScreen('main-menu');
         });
 
-       // Create an ability to move the logo using the mouse
-        // myMouse = input.Mouse();
-        // myMouse.registerCommand('mousedown', function(e) {
-        //   mouseCapture = true;
-        //   myTexture.moveTo({x : e.clientX, y : e.clientY});
-        // });
-        //
-        // myMouse.registerCommand('mouseup', function() {
-        //   mouseCapture = false;
-        // });
-        //
-        // myMouse.registerCommand('mousemove', function(e) {
-        //   if (mouseCapture) {
-        //     myTexture.moveTo({x : e.clientX, y : e.clientY});
-        //   }
-        // });
+
     }
 
 
@@ -329,7 +419,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         myMouse.update(elapsedTime);
         if (gamePhase === 'start-game') {
             currentUpdateAndRenderList = gameStartRenderList.slice(0);
-        } else if (gamePhase === 'game-over' ) {
+        } else if (gamePhase === 'game-over') {
             currentUpdateAndRenderList = gameEndRenderList.slice(0);
         } else if (gamePhase === 'play-game') {
             currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
@@ -341,18 +431,11 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
                 currentUpdateAndRenderList.push(...levelTwoRenderList.slice(0));
             } else if (level === 'levelThree') {
                 currentUpdateAndRenderList = levelThreeRenderList.slice(0);
+            } else {
+                currentUpdateAndRenderList = demoRenderList.slice(0);
             }
-        } else if (gamePhase === 'levelOne') {
-            currentUpdateAndRenderList = levelOneRenderList.slice(0);
-        } else if (gamePhase === 'levelTwo') {
-            currentUpdateAndRenderList = levelTwoRenderList.slice(0);
-        } else if (gamePhase === 'levelThree') {
-            currentUpdateAndRenderList = levelThreeRenderList.slice(0);
-        } else {
-            currentUpdateAndRenderList = demoRenderList.slice(0);
+            events.updateEvents(elapsedTime, currentUpdateAndRenderList);
         }
-        events.updateEvents(elapsedTime, currentUpdateAndRenderList);
-
     }
 
     function render() {
