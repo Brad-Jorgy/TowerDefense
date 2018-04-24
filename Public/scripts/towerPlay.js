@@ -271,10 +271,13 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
 
         myCreepManager = gameObjects.CreepManager({});
 
+        localStorage['upGradeTowerKey'] = upgradeTowerKey;
+        localStorage['sellTowerKey'] = sellTowerKey;
+        localStorage['startLevelKey'] = startLevelKey;
 
-        myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey') || upgradeTowerKey, postScorez);  //Need upgrade tower function
-        myKeyboard.registerCommand(localStorage.getItem('sellTowerKey') || sellTowerKey, scorez);              // Sell tower function needed
-        myKeyboard.registerCommand(localStorage.getItem('startLevelKey') || startLevelKey, startLevel);       //Need to fix when setting buttons
+        myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey'), upgradeTower);  //Need upgrade tower function
+        myKeyboard.registerCommand(localStorage.getItem('sellTowerKey'), sellTower);              // Sell tower function needed
+        myKeyboard.registerCommand(localStorage.getItem('startLevelKey'), startLevel);       //Need to fix when setting buttons
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
             cancelNextRequest = true;
