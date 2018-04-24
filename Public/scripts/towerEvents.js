@@ -51,8 +51,10 @@ MyGame.towerEvents = (function () {
 
                 if (miniEvents[event].count === 0) {
                     expiredEvents[expiredEvents.length] = event;
-                    console.log(`about to call ${miniEvents[event].callBackParms}`);
-                    miniEvents[event].callBack.call(miniEvents[event].callBackParms);
+                    if(miniEvents[event].callBackParms) {
+                        console.log(`about to call ${miniEvents[event].callBackParms}`);
+                        miniEvents[event].callBack.call(miniEvents[event].callBackParms);
+                    }
                 }
             } else if (miniEvents[event].updateAndRender) {
                 // console.log(`pushing ${miniEvents[event].updateAndRender }`);

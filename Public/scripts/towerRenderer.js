@@ -1,15 +1,17 @@
-MyGame.towerGraphics = (function() {
+MyGame.towerGraphics = (function(effects) {
     let canvas = document.getElementById('canvas-main');
     let ctx = canvas.getContext('2d');
     let currentRunningList = [];
     let gridWidth = 600;
     let squares = gridWidth/15;
-    // ctx.translate(0,0);
+    let deadCreep = [];
+    let explodeCreeps = [];
+    let towerSell = [];
+    let creepParts = [];
 
     function setCurrentGameList(currentList) {
         currentRunningList = currentList;
     }
-
 
     function updateScore() {
         ctx.font = "20px Arial";
@@ -25,6 +27,25 @@ MyGame.towerGraphics = (function() {
 
     }
 
+    function updateDeadCreeps() {
+        deadCreep.forEach((creepParts) => {
+            if (creepParts.brick.y > canvas.height * .6) {
+                for(let i=0; i<12; i++) {
+                    for(let j=0; j<6; j++) {
+                        // sprites.explosionOne(ctx, deadBrick.brick.x+(brickWidth/2), deadBrick.brick.y+(brickHeight/2));
+                        sprites.smokeBomb(ctx, deadBrick.brick.x+(brickWidth/2), deadBrick.brick.y+(brickHeight/2));
+                        explodoBricks.push({ x: deadBrick.brick.x+1, y: deadBrick.brick.y+1, color: deadBrick.brick.color });
+                    }
+                }
+                fallingBricks.splice(creep, 1);
+            }
+            if (creepParts.brick.y % 5 === 0) {
+                creepParts.dropIndex = creep.dropIndex + 1;
+            }
+            creepParts.brick.y = creepParts.brick.y + creepParts.dropIndex;
+        })
+    }
+
 
     function textLevel(text) {
         ctx.font = "20px Arial";
@@ -33,25 +54,18 @@ MyGame.towerGraphics = (function() {
         ctx.fillText(text, 60, 630);
     }
 
-    function updateTime() {
-        ctx.font = "20px Arial";
-        ctx.fillStyle = "white";
-        ctx.textAlign = "center";
-        ctx.fillText("Time: ", 480, 630);
-    }
-
     function updateMoney() {
         ctx.font = "20px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
-        ctx.fillText("$Money$: ", 780, 100);
+        ctx.fillText("$Money: ", 270, 630);
     }
 
     function updateLife() {
         ctx.font = "20px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
-        ctx.fillText("Life Remaining: ", 1000, 100);
+        ctx.fillText("Life Remaining: ", 480, 630);
     }
 
     function renderWalls(){
@@ -141,7 +155,7 @@ MyGame.towerGraphics = (function() {
         ctx.font = "25px Arial";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
-        ctx.fillText('Use esc to return to main screen', canvas.width / 2, canvas.height / 1.75);
+        ctx.fillText('To main creeps got past you', canvas.width / 2, canvas.height / 1.75);
     }
 
     function drawGrid(){
@@ -164,6 +178,22 @@ MyGame.towerGraphics = (function() {
     }
     function cancel() {
         ///nothing
+    }
+
+    function explosion(x,y){
+        effects.explosionOne(ctx, x, y);
+    }
+
+    function smoke(x,y){
+        effects.smokeBomb(ctx,x,y);
+    }
+
+    function dies(x,y){
+        effects.creepDies(ctx,x,y);
+    }
+
+    function sold(x,y){
+        effects.towerSold(ctx,x,y);
     }
 
     //------------------------------------------------------------------
@@ -351,15 +381,20 @@ MyGame.towerGraphics = (function() {
         drawBackground: drawBackground,
         drawGrid: drawGrid,
         textLevel: textLevel,
-        updateTime: updateTime,
         updateMoney: updateMoney,
         updateLife: updateLife,
         renderWalls: renderWalls,
         drawGameOver: drawGameOver,
         Sprite: Sprite,
         SpriteSheet: SpriteSheet,
+        explosion:explosion,
+        smoke: smoke,
+        updateDeadCreeps: updateDeadCreeps,
+        dies: dies,
+        sold: sold,
         gridWidth: gridWidth,
         cellWidth: squares,
         drawGridSquare: drawGridSquare,
     };
-}());
+
+}(MyGame.effectSystem));

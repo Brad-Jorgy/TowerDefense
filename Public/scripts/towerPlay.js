@@ -19,22 +19,29 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         lastTimeStamp,
         gamePhase = '',
         showGrid = false,
+        money = 0,
+        life = 0,
         currentUpdateAndRenderList = [],
         levelStaticRenderElements = [
             () => { graphics.drawBackground(backGround); },
             () => { graphics.renderWalls(); },
-            () => { graphics.updateTime(); },
             () => { graphics.updateMoney(); },
+            () => { graphics.updateLife(); },
             () => { graphics.updateLife(); },
         ],
         levelOneRenderList = [
             () => { graphics.textLevel("Level: 1"); },
+            //creep left to right ground
         ],
         levelTwoRenderList = [
             () => { graphics.textLevel("Level: 2"); },
+            //creeps left to right ground
+            //creeps top to bottom ground
         ],
         levelThreeRenderList = [
             () => { graphics.textLevel("Level: 3"); },
+            //creeps left to right ground Air
+            //creeps top to bottom groud Air
         ],
         gameEndRenderList = [
             () => { graphics.drawGameOver(); },
@@ -45,7 +52,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         demoRenderList = [
 
         ],
-        testTower,
         towerGroup,
         level = 'none',
         placeTowers = false,
@@ -53,44 +59,79 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         myCreepManager;
     const canvas = document.getElementById('canvas-main');
 
-    function startLevel(time, keyIn){
-        console.log("level started");
-        let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
-        let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, graphics.cancel, 'play')};
-        events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
-        myKeyboard.keyProcessed(keyIn);
+    function releaseCreeps() {
+      graphics.cancel();
+
+      myCreepManager.initCreeps(towerGroup);
+
+        myCreepManager.addCreep('creep1', {
+            gridPosition: { x: 0, y: 5 },
+            targetGridPosition: { x: 14, y: 5},
+            rotation: 0,
+            shortestPath: [],
+            direction: 'left',
+            nextTarget: { x: 1, y: 5 },
+            towerGroup: towerGroup,
+        });
+        myCreepManager.addCreep('creep2', {
+            gridPosition: { x: 0, y: 6 },
+            targetGridPosition: { x: 14, y: 6},
+            rotation: 0,
+            shortestPath: [],
+            direction: 'left',
+            nextTarget: { x: 1, y: 5 },
+            towerGroup: towerGroup,
+        });
+        myCreepManager.addCreep('creep3', {
+            gridPosition: { x: 0, y: 7 },
+            targetGridPosition: { x: 14, y: 7},
+            rotation: 0,
+            shortestPath: [],
+            direction: 'left',
+            nextTarget: { x: 1, y: 5 },
+            towerGroup: towerGroup,
+        });
     }
 
-    // function gameOver(){
-    //     if(creeps === 0){
-    //         end game.
-    //     }
-    // }
+    function startLevel(time, keyIn){
+        //if(gamePhase === 'levelOne'){
+            console.log("level started");
+            let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
+            let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
+            events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
+            myKeyboard.keyProcessed(keyIn);
+        // }else if(gamePhase === 'levelTwo'){
+        //     console.log("level started");
+        //     let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
+        //     let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
+        //     events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
+        //     myKeyboard.keyProcessed(keyIn);
+        // }else if(gamePhase === 'levelThree'){
+        //     console.log("level started");
+        //     let countDown2 = (data) => { events.add('count-down', 1000, 1, '2', graphics.renderTwo, countDown1, '1')};
+        //     let countDown1 = (data) => { events.add('count-down', 1000, 1, '1', graphics.renderOne, releaseCreeps, 'play')};
+        //     events.add('count-down', 1000, 1, '3', graphics.renderThree, countDown2, '2');
+        //     myKeyboard.keyProcessed(keyIn);
+        // }
+    }
+
+    function gameOver(){
+        if(creeps === 0){
+            graphics.drawGameOver();
+        }
+    }
 
     function upgradeTower(){
+        // graphics.smoke(500,500);
+        // graphics.explosion(500,500);
+        // graphics.dies(500, 500);
+        // graphics.sold(100, 100);
+        // graphics.smoke(100, 100);
         towerGroup.upgradeSelected();
     }
 
     function sellTower() {
 
-    }
-
-    function scorez(time, keyIn){
-        console.log("Score ADDED");
-        axios.get('/scores/scores.txt').then((response) => {
-            console.log(response.data);});
-        myKeyboard.keyProcessed(keyIn);
-    }
-
-    function postScorez(time, keyIn){
-        let score = 5;
-        superagent.post('/scoresIn')
-            .send( { scoreFile: 'scores.txt' , addScore: '10' }).then((response) => {
-            console.log(response.data);
-        }).catch( (err) => {
-            console.log(err);
-        });
-        myKeyboard.keyProcessed(keyIn);
     }
 
 
@@ -159,6 +200,8 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         console.log('Tower game initializing...');
 
         gameInfo = {};
+        money = 50;
+        life = 10;
         backGround.src = backgroundImage;
         backGround.addEventListener('load', backgroundLoaded, false);
         let optionsPopUp = document.getElementById('diaOptions');
@@ -198,6 +241,11 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             function() {
                 cancelNextRequest = true;
                 game.showScreen('main-menu');
+                towerGroup.reset();
+
+                //save score
+                //score = 0;
+                //resetCreeps
             });
         
         let towerButton1 = document.getElementById('tower1');
@@ -241,36 +289,15 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         });
         
         towerGroup = gameObjects.TowerGroup({});
-        testTower = gameObjects.Tower({
-            baseSprite: 'Images/turrets/turret-base.gif',
-            weaponSprite: 'Images/turrets/turret-1-1.png',
-            gridPosition: { x: 3, y: 5 },
-            target: { x: 200, y: 100 },
-            rotateRate: 6 * 3.14159 / 1000, // radians per second
-            radius: 3 * graphics.gridCellWidth
-        });
         myCreepManager = gameObjects.CreepManager({});
-        myCreepManager.addCreep('creep1', {
-            gridPosition: { x: 0, y: 5 },
-            targetGridPosition: { x: 15, y: 5},
-            rotation: 0
-        });
-        myCreepManager.addCreep('creep2', {
-            gridPosition: { x: 0, y: 6 },
-            targetGridPosition: { x: 15, y: 6},
-            rotation: 0
-        });
-        myCreepManager.addCreep('creep3', {
-            gridPosition: { x: 0, y: 7 },
-            targetGridPosition: { x: 15, y: 7},
-            rotation: 0
-        });
 
-        // Create the keyboard input handler and register the keyboard commands
+        localStorage['upGradeTowerKey'] = upgradeTowerKey;
+        localStorage['sellTowerKey'] = sellTowerKey;
+        localStorage['startLevelKey'] = startLevelKey;
 
-        myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey') || upgradeTowerKey, postScorez);  //Need upgrade tower function
-        myKeyboard.registerCommand(localStorage.getItem('sellTowerKey') || sellTowerKey, scorez);              // Sell tower function needed
-        myKeyboard.registerCommand(localStorage.getItem('startLevelKey') || startLevelKey, startLevel);       //Need to fix when setting buttons
+        myKeyboard.registerCommand(localStorage.getItem('upGradeTowerKey'), upgradeTower);  //Need upgrade tower function
+        myKeyboard.registerCommand(localStorage.getItem('sellTowerKey'), sellTower);              // Sell tower function needed
+        myKeyboard.registerCommand(localStorage.getItem('startLevelKey'), startLevel);       //Need to fix when setting buttons
         myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 
             cancelNextRequest = true;
@@ -306,7 +333,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
             currentUpdateAndRenderList = gameEndRenderList.slice(0);
         } else if (gamePhase === 'play-game') {
             currentUpdateAndRenderList = levelStaticRenderElements.slice(0);
-            testTower.update(elapsedTime);
             towerGroup.update(elapsedTime);
             myCreepManager.update(elapsedTime);
             if (level === 'levelOne') {
@@ -334,7 +360,7 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
         while(currentUpdateAndRenderList.length) {
             currentUpdateAndRenderList.shift().call();
         }
-        testTower.render();
+
         towerGroup.render();
         myCreepManager.render();
         if(showGrid){
@@ -409,7 +435,6 @@ MyGame.screens['play-game'] = (function(game, graphics, events, input, gameObjec
                     for (const active of activeTowerButtons) {
                         active.classList.remove('tower-active');
                     }
-                    testTower.setTarget(e.offsetX, e.offsetY);
                 } else {
                     if (towerGroup.towerExistsAtPosition(gridPosition)) {
                         towerGroup.setSelected(gridPosition);
