@@ -18,5 +18,7 @@ To force to the next level press Q then the "start level" button for level two, 
 
 The server and high scores do work but we don't have a score to pass it.
 
+To place towers, it is not click and drag, but click tower button then click on play area.
+
 
 
